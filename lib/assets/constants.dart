@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 const Color lightPrimary = Color.fromRGBO(245, 239, 231, 1);
 const Color lightSecondary = Color.fromRGBO(216, 196, 182, 1);
-const Color lightSecondaryAccent = Color.fromRGBO(37, 124, 155, 1);
+const Color lightSecondaryAccent = Color.fromRGBO(130, 94, 69, 1);
 const Color lightTertiary = Color.fromRGBO(33, 53, 85, 1);
 
 const Color darkPrimary = Color.fromRGBO(53, 47, 68, 1);
@@ -13,11 +13,24 @@ const Color darkTertiary = Color.fromRGBO(250, 240, 230, 1);
 ThemeData CustomLightTheme() {
   return ThemeData(
     useMaterial3: true,
-    primaryColor: lightPrimary,
-    scaffoldBackgroundColor: lightPrimary,
-    cardColor: lightSecondary,
+    colorScheme: ColorScheme(
+      brightness: Brightness.light,
+      primary: lightPrimary,
+      onPrimary: lightTertiary,
+      secondary: lightSecondary,
+      onSecondary: lightSecondaryAccent,
+      error: Colors.red,
+      onError: Colors.red,
+      background: lightPrimary,
+      onBackground: lightTertiary,
+      surface: lightSecondary,
+      onSurface: lightTertiary,
+    ),
     dividerColor: lightSecondaryAccent,
-    canvasColor: lightTertiary,
+    inputDecorationTheme: InputDecorationTheme(
+      hintStyle: TextStyle(color: lightSecondaryAccent),
+      labelStyle: TextStyle(color: lightSecondaryAccent),
+    ),
     iconTheme: const IconThemeData(color: lightTertiary),
     appBarTheme: const AppBarTheme(
       elevation: 0,
@@ -50,6 +63,9 @@ ThemeData CustomLightTheme() {
       tileColor: lightSecondary,
     ),
     tabBarTheme: const TabBarTheme(
+      indicatorColor: lightTertiary,
+      unselectedLabelColor: Colors.grey,
+      labelColor: lightTertiary,
       labelStyle: TextStyle(
         fontSize: 17,
       ),
@@ -96,7 +112,8 @@ ThemeData CustomDarkTheme() {
       tileColor: darkSecondary,
     ),
     tabBarTheme: const TabBarTheme(
-      unselectedLabelColor: darkTertiary,
+      indicatorColor: darkTertiary,
+      unselectedLabelColor: Colors.grey,
       labelColor: darkTertiary,
       labelStyle: TextStyle(
         fontSize: 17,

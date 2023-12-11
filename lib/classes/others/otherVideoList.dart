@@ -23,30 +23,24 @@ class _OtherVideoListState extends State<OtherVideoList> {
     } else {
       videos = await APIService.instance.fetchOtherVids(widget.query);
     }
-
-    videos.forEach((element) {
-      print(element.title);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: FutureBuilder(
-        future: getOtherVideos(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return ListView.builder(
-              itemCount: videos.length,
-              itemBuilder: (BuildContext context, int index) {
-                return VideoCard(item: videos[index]);
-              },
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+    return FutureBuilder(
+      future: getOtherVideos(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return ListView.builder(
+            itemCount: videos.length,
+            itemBuilder: (BuildContext context, int index) {
+              return VideoCard(item: videos[index]);
+            },
+          );
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }

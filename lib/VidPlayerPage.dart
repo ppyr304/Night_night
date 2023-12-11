@@ -122,11 +122,17 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                               ],
                             ),
                           ),
-                          OtherVideoList(
-                            query: (widget.isPlaylist == true)
-                                ? widget.playlistId
-                                : widget.item.title,
-                            isPlaylist: widget.isPlaylist,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Divider(),
+                          ),
+                          Expanded(
+                            child: OtherVideoList(
+                              query: (widget.isPlaylist == true)
+                                  ? widget.playlistId
+                                  : widget.item.title,
+                              isPlaylist: widget.isPlaylist,
+                            ),
                           ),
                         ],
                       );

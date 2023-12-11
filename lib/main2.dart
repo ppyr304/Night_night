@@ -146,7 +146,7 @@ class _Home2State extends State<Home2> with SingleTickerProviderStateMixin {
           children: <Widget>[
             Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).canvasColor),
+                  border: Border.all(width: 2, color: lightTertiary),
                   borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Row(
@@ -155,14 +155,13 @@ class _Home2State extends State<Home2> with SingleTickerProviderStateMixin {
                         child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: TextField(
+                        cursorColor: lightTertiary,
+                        style: TextStyle(color: lightTertiary),
                         controller: editor,
                         decoration: InputDecoration(
-                          hintStyle:
-                              TextStyle(color: Theme.of(context).canvasColor),
                           hintText: presets_1[filter],
                           border: InputBorder.none,
                         ),
-                        style: TextStyle(color: Theme.of(context).canvasColor),
                         onChanged: (value) {
                           setState(() {
                             searchQuery = value;

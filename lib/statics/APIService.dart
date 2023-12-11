@@ -229,7 +229,6 @@ class APIService {
       print(error);
     }
 
-    print(query);
     videos.forEach((element) {
       print(element.title);
     });
