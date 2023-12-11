@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:flutter/material.dart';
 
 const Color lightPrimary = Color.fromRGBO(245, 239, 231, 1);
