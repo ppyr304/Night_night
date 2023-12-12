@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/others/otherVideoList.dart';
@@ -44,8 +45,11 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
     return yt;
   }
 
+  void bottSheet() {}
+
   @override
   Widget build(BuildContext context) {
+    double ratio = 16 / 9;
     return Scaffold(
       body: (ready)
           ? FutureBuilder(
@@ -57,13 +61,28 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                   );
                 } else if (snapshot.connectionState == ConnectionState.done) {
                   return SafeArea(
-                    left: true,
-                    right: true,
-                    top: false,
-                    bottom: false,
                     child: YoutubePlayerBuilder(
+                      onEnterFullScreen: () {
+                        setState(() {
+                          ratio = MediaQuery.of(context).size.height /
+                              (MediaQuery.of(context).size.width * 0.75);
+                          print(ratio);
+                        });
+                        SystemChrome.setPreferredOrientations([
+                          DeviceOrientation.landscapeLeft,
+                          DeviceOrientation.landscapeRight,
+                        ]);
+                      },
+                      onExitFullScreen: () {
+                        setState(() {
+                          ratio = 16 / 9;
+                        });
+                        SystemChrome.setPreferredOrientations([
+                          DeviceOrientation.portraitUp,
+                        ]);
+                      },
                       player: YoutubePlayer(
-                        aspectRatio: MediaQuery.of(context).size.aspectRatio,
+                        aspectRatio: ratio,
                         progressColors: const ProgressBarColors(
                           playedColor: Colors.red,
                           handleColor: Colors.redAccent,
@@ -79,9 +98,11 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             player,
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
+                            ListTile(
+                              tileColor: Theme.of(context).primaryColor,
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              title: Text(
                                 widget.item.title,
                                 maxLines: 2,
                                 style: TextStyle(
@@ -93,11 +114,21 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                              subtitle: Text(
+                                timeAgo(widget.item.uploadDate),
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                ),
+                              ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     widget.item.author,
@@ -110,14 +141,28 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  Text(
-                                    timeAgo(widget.item.uploadDate),
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .inversePrimary,
-                                    ),
-                                  ),
+                                  if (widget.isPlaylist)
+                                    OutlinedButton(
+                                      child: const Text('show playlist'),
+                                      onPressed: () {
+                                        showBottomSheet(
+                                            context: context,
+                                            builder: (context) {
+                                              return Container(
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height /
+                                                    2,
+                                                child: Text('data'),
+                                              );
+                                            });
+                                      },
+                                    )
+                                  else
+                                    Container(),
                                 ],
                               ),
                             ),
@@ -125,19 +170,6 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                               padding: EdgeInsets.all(8.0),
                               child: Divider(),
                             ),
-                            (widget.isPlaylist)
-                                ? const Column(
-                                    children:  [
-                                      ExpansionTile(
-                                        title: Text("playlist"),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Divider(),
-                                      ),
-                                    ],
-                                  )
-                                : Container(),
                             Expanded(
                               child: OtherVideoList(
                                 query: widget.item.title,

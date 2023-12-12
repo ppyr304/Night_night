@@ -13,6 +13,7 @@ const Color darkTertiary = Color.fromRGBO(250, 240, 230, 1);
 ThemeData CustomLightTheme() {
   return ThemeData(
     useMaterial3: true,
+    primaryColor: lightPrimary,
     colorScheme: const ColorScheme(
       brightness: Brightness.light,
       primary: lightSecondary,
@@ -37,25 +38,19 @@ ThemeData CustomLightTheme() {
       hoverColor: lightSecondaryAccent,
     ),
     iconTheme: const IconThemeData(color: lightTertiary),
-    appBarTheme: const AppBarTheme(
-      elevation: 0,
-      backgroundColor: lightPrimary,
-      foregroundColor: lightTertiary,
-    ),
-    textButtonTheme: TextButtonThemeData(
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(lightSecondary),
-        foregroundColor: MaterialStateProperty.all(lightTertiary),
-      ),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
+    outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
         textStyle: MaterialStateProperty.all(
-          const TextStyle(fontWeight: FontWeight.bold),
+          const TextStyle(color: lightTertiary, fontWeight: FontWeight.bold),
         ),
         backgroundColor: MaterialStateProperty.all(lightSecondary),
         foregroundColor: MaterialStateProperty.all(lightTertiary),
       ),
+    ),
+    appBarTheme: const AppBarTheme(
+      elevation: 0,
+      backgroundColor: lightPrimary,
+      foregroundColor: lightTertiary,
     ),
     cardTheme: const CardTheme(
       color: lightPrimary,
@@ -63,8 +58,6 @@ ThemeData CustomLightTheme() {
       shadowColor: lightTertiary,
     ),
     listTileTheme: const ListTileThemeData(
-      textColor: lightTertiary,
-      iconColor: lightTertiary,
       tileColor: lightSecondary,
     ),
     tabBarTheme: const TabBarTheme(

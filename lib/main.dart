@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistCard.dart';
-import 'package:youtube_player/classes/others/mainTabView.dart';
-import 'package:youtube_player/main2.dart';
 import 'classes/forChannels/channelCard.dart';
 import 'classes/forVideos/videoCard.dart';
 import 'statics/APIService.dart';
@@ -21,21 +19,21 @@ class MyApp extends StatelessWidget {
       title: 'youtube player?',
       theme: CustomLightTheme(),
       darkTheme: CustomDarkTheme(),
-      home: const Home2(title: 'Night Night'),
+      home: const HomePage(title: 'Night Night'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
+class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController _mainTabController;
 
@@ -65,12 +63,26 @@ class _MyHomePageState extends State<MyHomePage>
   Future<String> searchVideos() async {
     _VideoList = await APIService.instance.getAllVideos(searchQuery);
 
-    // Set your target date, for example, the current date and time
-    DateTime targetDate = DateTime.now();
-
-    _VideoList.sort((a, b) => (a.uploadDate!.difference(targetDate))
-        .abs()
-        .compareTo(b.uploadDate!.difference(targetDate).abs()));
+    // // Set your target date, for example, the current date and time
+    // DateTime targetDate = DateTime.now();
+    //
+    // _VideoList.sort((a, b) {
+    //   if (a.uploadDate == null && b.uploadDate == null) {
+    //     return 0;
+    //   } else if (a.uploadDate == null) {
+    //     return 1; // Move items with null DateTime to the end
+    //   } else if (b.uploadDate == null) {
+    //     return -1; // Move items with null DateTime to the end
+    //   } else {
+    //     var x = a.uploadDate!.compareTo(targetDate);
+    //     var y = b.uploadDate!.compareTo(targetDate);
+    //     return x.compareTo(y);
+    //   }
+    // });
+    //
+    // _VideoList.forEach((item) {
+    //   print(timeAgo(item.uploadDate));
+    // });
 
     return "video search finished";
   }
@@ -88,22 +100,26 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<String> filler() async {
+    _firstVids.clear();
     await Future.wait(_PlaylistList.map((playlist) async {
       Video temp =
           await APIService.instance.getFirstVideo(playlist.id.toString());
       _firstVids.add(temp);
     }));
 
-    print('done');
     return "playlist search finished";
   }
 
-  Future<void> search() async {
-    setState(() {
-      data = searchVideos();
-      data = searchChannels();
-      data = searchPlaylists();
-    });
+  Future<String> search() async {
+    List<Future<String>> futures = [
+      searchVideos(),
+      searchChannels(),
+      searchPlaylists(),
+    ];
+
+    await Future.wait(futures);
+
+    return "All searches completed";
   }
 
   void setFilter(int num) {
@@ -147,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage>
           children: <Widget>[
             Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).canvasColor),
+                  border: Border.all(width: 2, color: lightTertiary),
                   borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Row(
@@ -156,21 +172,21 @@ class _MyHomePageState extends State<MyHomePage>
                         child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: TextField(
+                        cursorColor: lightTertiary,
+                        style: TextStyle(color: lightTertiary),
                         controller: editor,
                         decoration: InputDecoration(
-                          hintStyle:
-                              TextStyle(color: Theme.of(context).canvasColor),
                           hintText: presets_1[filter],
                           border: InputBorder.none,
                         ),
-                        style: TextStyle(color: Theme.of(context).canvasColor),
                         onChanged: (value) {
                           setState(() {
                             searchQuery = value;
                           });
                         },
                         onEditingComplete: () {
-                          search();
+                          data = search();
+                          setState(() {});
                         },
                       ),
                     )),
@@ -190,7 +206,8 @@ class _MyHomePageState extends State<MyHomePage>
                     GestureDetector(
                       child: const Icon(Icons.search_rounded),
                       onTap: () {
-                        search();
+                        data = search();
+                        setState(() {});
                       },
                     ),
                     const SizedBox(width: 8),
@@ -207,30 +224,90 @@ class _MyHomePageState extends State<MyHomePage>
                 ]),
             const SizedBox(height: 10),
             Expanded(
-                child: FutureBuilder(
-              future: data,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return TabBarView(
-                    controller: _mainTabController,
-                    children: [
-                      // MyTabViewItem(list: _VideoList),
-                      // MyTabViewItem(list: _ChannelList),
-                      // MyTabViewItem(list: _PlaylistList, list2: _firstVids),
-                    ],
-                  );
-                } else if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
-                  return const Expanded(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            )),
+              child: TabBarView(
+                controller: _mainTabController,
+                children: [
+                  // MyTabViewItem(
+                  //   data: data,
+                  //   list: _VideoList,
+                  // ),
+                  // MyTabViewItem(
+                  //   data: data,
+                  //   list: _ChannelList,
+                  // ),
+                  // MyTabViewItem(
+                  //   data: data,
+                  //   list: _PlaylistList,
+                  //   list2: _firstVids,
+                  // ),
+
+                  FutureBuilder(
+                      future: data,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return ListView.builder(
+                            itemCount: _VideoList.length,
+                            itemBuilder: (context, index) {
+                              return VideoCard(
+                                item: _VideoList[index],
+                              );
+                            },
+                          );
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      }),
+                  FutureBuilder(
+                      future: data,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return ListView.builder(
+                            itemCount: _ChannelList.length,
+                            itemBuilder: (context, index) {
+                              return ChannelCard(
+                                item: _ChannelList[index],
+                              );
+                            },
+                          );
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      }),
+                  FutureBuilder(
+                      future: data,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return ListView.builder(
+                            itemCount: _PlaylistList.length,
+                            itemBuilder: (context, index) {
+                              return PlaylistCard(
+                                playlist: _PlaylistList[index],
+                                firstVideo: _firstVids[index],
+                              );
+                            },
+                          );
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      }),
+                ],
+              ),
+            ),
           ],
         ),
       ),
