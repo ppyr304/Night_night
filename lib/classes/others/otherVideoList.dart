@@ -6,9 +6,8 @@ import '../../statics/APIService.dart';
 
 class OtherVideoList extends StatefulWidget {
   final String query;
-  final bool isPlaylist;
   const OtherVideoList(
-      {super.key, required this.query, required this.isPlaylist});
+      {super.key, required this.query});
 
   @override
   State<OtherVideoList> createState() => _OtherVideoListState();
@@ -18,11 +17,14 @@ class _OtherVideoListState extends State<OtherVideoList> {
   List<Video> videos = [];
 
   Future<void> getOtherVideos() async {
-    if (widget.isPlaylist) {
-      videos = await APIService.instance.fetchPlaylistVideos(widget.query);
-    } else {
-      videos = await APIService.instance.fetchOtherVids(widget.query);
-    }
+    videos = await APIService.instance.fetchOtherVids(widget.query);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getOtherVideos();
   }
 
   @override

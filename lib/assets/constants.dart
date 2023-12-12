@@ -13,9 +13,9 @@ const Color darkTertiary = Color.fromRGBO(250, 240, 230, 1);
 ThemeData CustomLightTheme() {
   return ThemeData(
     useMaterial3: true,
-    colorScheme: ColorScheme(
+    colorScheme: const ColorScheme(
       brightness: Brightness.light,
-      primary: lightPrimary,
+      primary: lightSecondary,
       onPrimary: lightTertiary,
       secondary: lightSecondary,
       onSecondary: lightSecondaryAccent,
@@ -26,10 +26,15 @@ ThemeData CustomLightTheme() {
       surface: lightSecondary,
       onSurface: lightTertiary,
     ),
+    indicatorColor: lightSecondaryAccent,
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: lightSecondaryAccent,
+    ),
     dividerColor: lightSecondaryAccent,
-    inputDecorationTheme: InputDecorationTheme(
+    inputDecorationTheme: const InputDecorationTheme(
       hintStyle: TextStyle(color: lightSecondaryAccent),
       labelStyle: TextStyle(color: lightSecondaryAccent),
+      hoverColor: lightSecondaryAccent,
     ),
     iconTheme: const IconThemeData(color: lightTertiary),
     appBarTheme: const AppBarTheme(

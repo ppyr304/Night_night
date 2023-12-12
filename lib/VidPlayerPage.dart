@@ -7,14 +7,15 @@ import 'package:youtube_player/classes/others/otherVideoList.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class VidPlayerPage extends StatefulWidget {
-  final String playlistId;
-  final Video item;
-  final bool isPlaylist;
   const VidPlayerPage(
       {super.key,
       required this.isPlaylist,
       required this.item,
-      required this.playlistId});
+      this.playlistId});
+
+  final String? playlistId;
+  final Video item;
+  final bool isPlaylist;
 
   @override
   State<VidPlayerPage> createState() => _VidPlayerPageState();
@@ -92,25 +93,20 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              widget.item.author,
-                              maxLines: 1,
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                                fontSize: 18,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Icon(Icons.thumb_up_alt_rounded),
-                                Icon(Icons.thumb_down_alt_rounded),
+                                Text(
+                                  widget.item.author,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inversePrimary,
+                                    fontSize: 18,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                                 Text(
                                   timeAgo(widget.item.uploadDate),
                                   style: TextStyle(
@@ -122,16 +118,26 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Divider(),
                           ),
+                          (widget.isPlaylist)
+                              ? const Column(
+                                  children:  [
+                                    ExpansionTile(
+                                      title: Text("playlist"),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Divider(),
+                                    ),
+                                  ],
+                                )
+                              : Container(),
                           Expanded(
                             child: OtherVideoList(
-                              query: (widget.isPlaylist == true)
-                                  ? widget.playlistId
-                                  : widget.item.title,
-                              isPlaylist: widget.isPlaylist,
+                              query: widget.item.title,
                             ),
                           ),
                         ],
