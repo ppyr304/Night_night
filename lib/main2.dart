@@ -250,7 +250,7 @@ class _Home2State extends State<Home2> with SingleTickerProviderStateMixin {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
-                            itemCount: _VideoList.length,
+                            itemCount: _ChannelList.length,
                             itemBuilder: (context, index) {
                               return ChannelCard(
                                 item: _ChannelList[index],
@@ -271,7 +271,7 @@ class _Home2State extends State<Home2> with SingleTickerProviderStateMixin {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
-                            itemCount: _VideoList.length,
+                            itemCount: _PlaylistList.length,
                             itemBuilder: (context, index) {
                               return PlaylistCard(
                                 playlist: _PlaylistList[index],

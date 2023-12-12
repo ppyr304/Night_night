@@ -17,7 +17,10 @@ class ChannelCard extends StatelessWidget {
         leading: CircleAvatar(
           backgroundImage: NetworkImage(item.logoUrl),
         ),
-        title: Text(item.title),
+        title: Text(
+          item.title,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         subtitle: Text(
           SubCount(item.subscribersCount?.toDouble() ?? 0),
         ),

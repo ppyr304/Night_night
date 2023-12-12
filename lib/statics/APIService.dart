@@ -122,7 +122,7 @@ class APIService {
       Map<String, String> params = {
         'part': 'snippet',
         'playlistId': listId,
-        'maxResults': '20',
+        'maxResults': '10',
         'pageToken': _PageToken,
         'key': youtube_API_key,
       };
@@ -174,6 +174,7 @@ class APIService {
       final Map<String, String> params = {
         'part': 'snippet',
         'type': 'playlist',
+        'maxResults': '10',
         'q': query,
         'key': youtube_API_key,
       };
@@ -224,8 +225,7 @@ class APIService {
       playlistVideos.forEach((video) {
         videos.add(video);
       });
-
-    } catch(error) {
+    } catch (error) {
       print(error);
     }
 

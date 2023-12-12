@@ -56,90 +56,97 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                     child: CircularProgressIndicator(),
                   );
                 } else if (snapshot.connectionState == ConnectionState.done) {
-                  return YoutubePlayerBuilder(
-                    player: YoutubePlayer(
-                      progressColors: const ProgressBarColors(
-                        playedColor: Colors.red,
-                        handleColor: Colors.redAccent,
+                  return SafeArea(
+                    left: true,
+                    right: true,
+                    top: false,
+                    bottom: false,
+                    child: YoutubePlayerBuilder(
+                      player: YoutubePlayer(
+                        aspectRatio: MediaQuery.of(context).size.aspectRatio,
+                        progressColors: const ProgressBarColors(
+                          playedColor: Colors.red,
+                          handleColor: Colors.redAccent,
+                        ),
+                        controller: snapshot.data!,
+                        showVideoProgressIndicator: true,
+                        onEnded: (ytContext) {
+                          exit(0);
+                        },
                       ),
-                      controller: snapshot.data!,
-                      showVideoProgressIndicator: true,
-                      onEnded: (ytContext) {
-                        exit(0);
-                      },
-                    ),
-                    builder: (BuildContext, player) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: player),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              widget.item.title,
-                              maxLines: 2,
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                overflow: TextOverflow.ellipsis,
+                      builder: (BuildContext, player) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            player,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                widget.item.title,
+                                maxLines: 2,
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  widget.item.author,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .inversePrimary,
-                                    fontSize: 18,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  timeAgo(widget.item.uploadDate),
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .inversePrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Divider(),
-                          ),
-                          (widget.isPlaylist)
-                              ? const Column(
-                                  children:  [
-                                    ExpansionTile(
-                                      title: Text("playlist"),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    widget.item.author,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .inversePrimary,
+                                      fontSize: 18,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Divider(),
+                                  ),
+                                  Text(
+                                    timeAgo(widget.item.uploadDate),
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .inversePrimary,
                                     ),
-                                  ],
-                                )
-                              : Container(),
-                          Expanded(
-                            child: OtherVideoList(
-                              query: widget.item.title,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    },
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Divider(),
+                            ),
+                            (widget.isPlaylist)
+                                ? const Column(
+                                    children:  [
+                                      ExpansionTile(
+                                        title: Text("playlist"),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Divider(),
+                                      ),
+                                    ],
+                                  )
+                                : Container(),
+                            Expanded(
+                              child: OtherVideoList(
+                                query: widget.item.title,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   );
                 } else if (snapshot.hasError) {
                   return Text("An Error has Occured:\n${snapshot.error}");

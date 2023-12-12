@@ -44,7 +44,10 @@ class _PlaylistCardState extends State<PlaylistCard> {
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("by ${widget.playlist.author}"),
+                  Text(
+                    "by ${widget.playlist.author}",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   Text("${widget.playlist.videoCount} videos"),
                 ],
               ),

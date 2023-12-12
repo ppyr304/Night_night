@@ -34,8 +34,12 @@ class VideoCard extends StatelessWidget {
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("${item.author}"),
-                  Text('${formatDuration(item.duration)} | ${timeAgo(item.uploadDate)}'),
+                  Text(
+                    "${item.author}",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                      '${formatDuration(item.duration)} | ${timeAgo(item.uploadDate)}'),
                 ],
               ),
             ),
