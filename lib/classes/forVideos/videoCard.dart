@@ -46,7 +46,6 @@ class VideoCard extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => VidPlayerPage(
-                playlistId: '',
                 item: item,
                 isPlaylist: false,
               ),

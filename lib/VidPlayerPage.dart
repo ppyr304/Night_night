@@ -8,12 +8,9 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class VidPlayerPage extends StatefulWidget {
   const VidPlayerPage(
-      {super.key,
-      required this.isPlaylist,
-      required this.item,
-      this.playlistId});
+      {super.key, required this.isPlaylist, required this.item, this.playlist});
 
-  final String? playlistId;
+  final Playlist? playlist;
   final Video item;
   final bool isPlaylist;
 

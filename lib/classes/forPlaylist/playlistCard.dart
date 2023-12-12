@@ -56,7 +56,7 @@ class _PlaylistCardState extends State<PlaylistCard> {
             context,
             MaterialPageRoute(
               builder: (context) => VidPlayerPage(
-                playlistId: widget.playlist.id.toString(),
+                playlist: widget.playlist,
                 item: widget.firstVideo,
                 isPlaylist: true,
               ),
