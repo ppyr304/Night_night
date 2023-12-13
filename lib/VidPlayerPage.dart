@@ -141,15 +141,25 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    widget.item.author,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .inversePrimary,
-                                      fontSize: 18,
-                                      overflow: TextOverflow.ellipsis,
+                                  Expanded(
+                                    child: ListTile(
+                                      tileColor: Theme.of(context).primaryColor,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 0,
+                                        vertical: 0,
+                                      ),
+                                      title: Text(
+                                        widget.item.author,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inversePrimary,
+                                          fontSize: 18,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   if (widget.isPlaylist)

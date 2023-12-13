@@ -44,6 +44,7 @@ class _HomePageState extends State<HomePage>
   List<Playlist> _PlaylistList = [];
   List<Video> _firstVids = [];
   var editor = TextEditingController();
+  FocusNode _node = FocusNode();
   int filter = 0;
   List<String> presets_1 = [
     "Enter Video Name...",
@@ -63,26 +64,22 @@ class _HomePageState extends State<HomePage>
   Future<String> searchVideos() async {
     _VideoList = await APIService.instance.getAllVideos(searchQuery);
 
-    // // Set your target date, for example, the current date and time
-    // DateTime targetDate = DateTime.now();
-    //
-    // _VideoList.sort((a, b) {
-    //   if (a.uploadDate == null && b.uploadDate == null) {
-    //     return 0;
-    //   } else if (a.uploadDate == null) {
-    //     return 1; // Move items with null DateTime to the end
-    //   } else if (b.uploadDate == null) {
-    //     return -1; // Move items with null DateTime to the end
-    //   } else {
-    //     var x = a.uploadDate!.compareTo(targetDate);
-    //     var y = b.uploadDate!.compareTo(targetDate);
-    //     return x.compareTo(y);
-    //   }
-    // });
-    //
-    // _VideoList.forEach((item) {
-    //   print(timeAgo(item.uploadDate));
-    // });
+    // Set your target date, for example, the current date and time
+    DateTime targetDate = DateTime.now();
+
+    _VideoList.sort((a, b) {
+      if (a.uploadDate == null && b.uploadDate == null) {
+        return 0;
+      } else if (a.uploadDate == null) {
+        return 1; // Move items with null DateTime to the end
+      } else if (b.uploadDate == null) {
+        return -1; // Move items with null DateTime to the end
+      } else {
+        var x = b.uploadDate!.difference(targetDate);
+        var y = a.uploadDate!.difference(targetDate);
+        return x.compareTo(y);
+      }
+    });
 
     return "video search finished";
   }
@@ -97,20 +94,21 @@ class _HomePageState extends State<HomePage>
     _firstVids.clear();
     _PlaylistList = await APIService.instance.fetchPlaylist(searchQuery);
 
-    return await filler();
+    return await getPlaylistPic();
   }
 
-  Future<String> filler() async {
-    await Future.wait(_PlaylistList.map((playlist) async {
-      Video temp =
-          await APIService.instance.getFirstVideo(playlist.id.toString());
-      _firstVids.add(temp);
-    }));
+  Future<String> getPlaylistPic() async {
+    for (int x = 0; x < _PlaylistList.length; x++) {
+      _firstVids.add(await APIService.instance
+          .getFirstVideo(_PlaylistList[x].id.toString()));
+    }
 
     return "playlist search finished";
   }
 
   Future<String> search() async {
+    _node.unfocus();
+
     List<Future<String>> futures = [
       searchVideos(),
       searchChannels(),
@@ -126,18 +124,6 @@ class _HomePageState extends State<HomePage>
     setState(() {
       filter = num;
     });
-  }
-
-  int getLength() {
-    if (filter == 0) {
-      return _VideoList.length;
-    } else if (filter == 1) {
-      return _ChannelList.length;
-    } else if (filter == 2) {
-      return _PlaylistList.length;
-    } else {
-      return 0;
-    }
   }
 
   @override
@@ -173,8 +159,9 @@ class _HomePageState extends State<HomePage>
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: TextField(
                         cursorColor: lightTertiary,
-                        style: TextStyle(color: lightTertiary),
+                        style: const TextStyle(color: lightTertiary),
                         controller: editor,
+                        focusNode: _node,
                         decoration: InputDecoration(
                           hintText: presets_1[filter],
                           border: InputBorder.none,
@@ -215,6 +202,9 @@ class _HomePageState extends State<HomePage>
                 )),
             const SizedBox(height: 10),
             TabBar(
+                onTap: (index) {
+                  setFilter(index);
+                },
                 controller: _mainTabController,
                 isScrollable: true,
                 tabs: const [
