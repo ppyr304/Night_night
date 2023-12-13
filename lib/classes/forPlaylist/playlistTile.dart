@@ -8,17 +8,21 @@ class PlaylistTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
-        child: Image.network(video.thumbnails.maxResUrl),
-      ),
-      title: Text(video.title),
-      subtitle: Text(
-        video.author,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      trailing: Text(index.toString()),
+    return Row(
+      children: [
+        Icon(Icons.arrow_right),
+        Expanded(
+          child: ListTile(
+            leading: Image.network(video.thumbnails.maxResUrl),
+            title: Text(video.title),
+            subtitle: Text(
+              video.author,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            trailing: Text(index.toString()),
+          ),
+        ),
+      ],
     );
   }
 }

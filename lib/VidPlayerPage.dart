@@ -24,20 +24,24 @@ class VidPlayerPage extends StatefulWidget {
 
 class _VidPlayerPageState extends State<VidPlayerPage> {
   late Future<YoutubePlayerController> ytController;
-  Future<List<Video>>? allVids;
+  List<Video> allVids = [];
   bool ready = false;
   bool show = false;
 
   Future<void> fetchPlaylistVideo() async {
-    allVids =
-        APIService.instance.fetchPlaylistVideos(widget.playlist!.id.toString());
-    setState(() {});
+    allVids = await APIService.instance
+        .fetchPlaylistVideos(widget.playlist!.id.toString());
   }
 
   @override
   void initState() {
     super.initState();
     ytController = getController();
+    fetchPlaylistVideo();
+
+    setState(() {
+      ready = true;
+    });
   }
 
   Future<YoutubePlayerController> getController() async {
@@ -45,14 +49,11 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
       initialVideoId: widget.item.id.toString(),
       flags: const YoutubePlayerFlags(
         mute: false,
-        autoPlay: true,
+        autoPlay: false,
         loop: true,
       ),
     );
 
-    setState(() {
-      ready = true;
-    });
     return yt;
   }
 
@@ -166,8 +167,8 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                       child: const Text('show playlist'),
                                       onPressed: () {
                                         show = !show;
-                                        if (show) {
-                                          buildSheet(context, allVids!);
+                                        if (show == true) {
+                                          buildSheet(context, allVids);
                                         } else {
                                           Navigator.of(context).pop();
                                         }

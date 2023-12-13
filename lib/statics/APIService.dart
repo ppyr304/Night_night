@@ -218,11 +218,10 @@ class APIService {
     List<Video> videos = [];
 
     try {
-      Stream<Video> playlistVideos = yte.playlists.getVideos(playlistID);
-
-      playlistVideos.forEach((video) {
-        videos.add(video);
+      await yte.playlists.getVideos(playlistID).forEach((element) {
+        videos.add(element);
       });
+
     } catch (error) {
       log('${DateTime.now()} Error: $error');
     }
