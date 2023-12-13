@@ -5,7 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/others/otherVideoList.dart';
+import 'package:youtube_player/statics/APIService.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+import 'classes/forPlaylist/botSheetList.dart';
 
 class VidPlayerPage extends StatefulWidget {
   const VidPlayerPage(
@@ -21,7 +24,15 @@ class VidPlayerPage extends StatefulWidget {
 
 class _VidPlayerPageState extends State<VidPlayerPage> {
   late Future<YoutubePlayerController> ytController;
+  Future<List<Video>>? allVids;
   bool ready = false;
+  bool show = false;
+
+  Future<void> fetchPlaylistVideo() async {
+    allVids =
+        APIService.instance.fetchPlaylistVideos(widget.playlist!.id.toString());
+    setState(() {});
+  }
 
   @override
   void initState() {
@@ -145,20 +156,13 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                     OutlinedButton(
                                       child: const Text('show playlist'),
                                       onPressed: () {
-                                        showBottomSheet(
-                                            context: context,
-                                            builder: (context) {
-                                              return Container(
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height /
-                                                    2,
-                                                child: Text('data'),
-                                              );
-                                            });
+                                        show = !show;
+                                        if (show) {
+                                          buildSheet(context, allVids!);
+                                        } else {
+                                          Navigator.of(context).pop();
+                                        }
+                                        setState(() {});
                                       },
                                     )
                                   else

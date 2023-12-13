@@ -94,13 +94,13 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<String> searchPlaylists() async {
+    _firstVids.clear();
     _PlaylistList = await APIService.instance.fetchPlaylist(searchQuery);
 
     return await filler();
   }
 
   Future<String> filler() async {
-    _firstVids.clear();
     await Future.wait(_PlaylistList.map((playlist) async {
       Video temp =
           await APIService.instance.getFirstVideo(playlist.id.toString());

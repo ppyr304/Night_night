@@ -213,12 +213,12 @@ class APIService {
     return first;
   }
 
-  Future<List<Video>> fetchPlaylistVideos(String query) async {
+  Future<List<Video>> fetchPlaylistVideos(String playlistID) async {
     YoutubeExplode yte = YoutubeExplode();
     List<Video> videos = [];
 
     try {
-      Stream<Video> playlistVideos = await yte.playlists.getVideos(query);
+      Stream<Video> playlistVideos = await yte.playlists.getVideos(playlistID);
 
       print(playlistVideos.length);
 
