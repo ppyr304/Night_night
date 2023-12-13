@@ -9,7 +9,7 @@ class SearchData {
   List<Video> _VideoList = [];
   List<Channel> _ChannelList = [];
   List<Playlist> _PlaylistList = [];
-  List<Video> _firstVids = [];
+  final List<Video> _firstVids = [];
 
   SearchData._instantiate();
 

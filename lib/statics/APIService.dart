@@ -218,7 +218,7 @@ class APIService {
     List<Video> videos = [];
 
     try {
-      Stream<Video> playlistVideos = await yte.playlists.getVideos(playlistID);
+      Stream<Video> playlistVideos = yte.playlists.getVideos(playlistID);
 
       playlistVideos.forEach((video) {
         videos.add(video);

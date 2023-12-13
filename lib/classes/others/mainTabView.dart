@@ -39,6 +39,7 @@ class MyTabViewItem extends StatelessWidget {
                     firstVideo: list2?[index],
                   );
                 }
+                return null;
               },
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {
