@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:developer';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/classes/forChannels/channelData.dart';
 import 'package:http/http.dart' as http;
@@ -49,7 +49,7 @@ class APIService {
         }
       }
     } catch (error) {
-      print('Error: $error');
+      log('${DateTime.now()} Error: $error');
     }
 
     ytExplode.close();
@@ -64,7 +64,7 @@ class APIService {
     try {
       videos = await client.search(query);
     } catch (error) {
-      print('Error: $error');
+      log('${DateTime.now()} Error: $error');
     }
 
     ytExplode.close();
@@ -108,7 +108,7 @@ class APIService {
         }
       }
     } catch (error) {
-      print('Error: $error');
+      log('${DateTime.now()} Error: $error');
     }
 
     return channelData;
@@ -148,7 +148,7 @@ class APIService {
         }
       }
     } catch (error) {
-      print('Error: $error');
+      log('${DateTime.now()} Error: $error');
     }
 
     ytExplode.close();
@@ -197,7 +197,7 @@ class APIService {
         }
       }
     } catch (error) {
-      print(error);
+      log('${DateTime.now()} Error: $error');
     }
 
     ytExplode.close();
@@ -220,18 +220,12 @@ class APIService {
     try {
       Stream<Video> playlistVideos = await yte.playlists.getVideos(playlistID);
 
-      print(playlistVideos.length);
-
       playlistVideos.forEach((video) {
         videos.add(video);
       });
     } catch (error) {
-      print(error);
+      log('${DateTime.now()} Error: $error');
     }
-
-    videos.forEach((element) {
-      print(element.title);
-    });
 
     yte.close();
     return videos;

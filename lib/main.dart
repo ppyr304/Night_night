@@ -11,7 +11,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +42,9 @@ class _HomePageState extends State<HomePage>
   List<Video> _VideoList = [];
   List<Channel> _ChannelList = [];
   List<Playlist> _PlaylistList = [];
-  List<Video> _firstVids = [];
+  final List<Video> _firstVids = [];
   var editor = TextEditingController();
-  FocusNode _node = FocusNode();
+  final FocusNode _node = FocusNode();
   int filter = 0;
   List<String> presets_1 = [
     "Enter Video Name...",
@@ -136,7 +136,6 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     List<String> ddItems = ['videos', 'channels', 'playlists'];
-    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),

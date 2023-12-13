@@ -4,7 +4,6 @@ import 'package:youtube_player/classes/forChannels/channelData.dart';
 
 import 'assets/constants.dart';
 import 'classes/forChannels/channelTab.dart';
-import 'classes/forChannels/channelTab.dart';
 import 'statics/APIService.dart';
 
 class ChannelPage extends StatefulWidget {
@@ -41,37 +40,35 @@ class _HomePageState extends State<ChannelPage>
           if (snapshot.connectionState == ConnectionState.done) {
             return Column(
               children: [
-                Container(
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(16),
-                    leading: CircleAvatar(
-                      radius: 30, // Adjust the radius of the circle avatar
-                      backgroundImage: NetworkImage(widget.item.logoUrl),
-                    ),
-                    title: Text(
-                      widget.item.title,
-                      maxLines: 2,
-                      style: TextStyle(
-                        fontSize: 24, // Adjust the font size as needed
-                        fontWeight: FontWeight.bold,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          SubCount(
-                              widget.item.subscribersCount?.toDouble() ?? 0),
-                        ),
-                        Text(
-                          '${channelData.totalVideoCount} videos uploaded',
-                        ),
-                      ],
-                    ),
-                    isThreeLine: true,
+                ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: CircleAvatar(
+                    radius: 30, // Adjust the radius of the circle avatar
+                    backgroundImage: NetworkImage(widget.item.logoUrl),
                   ),
+                  title: Text(
+                    widget.item.title,
+                    maxLines: 2,
+                    style: const TextStyle(
+                      fontSize: 24, // Adjust the font size as needed
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        SubCount(
+                            widget.item.subscribersCount?.toDouble() ?? 0),
+                      ),
+                      Text(
+                        '${channelData.totalVideoCount} videos uploaded',
+                      ),
+                    ],
+                  ),
+                  isThreeLine: true,
                 ),
                 Expanded(
                   flex: 4,
@@ -82,7 +79,7 @@ class _HomePageState extends State<ChannelPage>
                         unselectedLabelColor: Theme.of(context).dividerColor,
                         isScrollable: true,
                         controller: _tabController,
-                        tabs: [
+                        tabs: const [
                           Tab(text: 'uploads'),
                           Tab(text: 'something'),
                           Tab(text: 'else'),
@@ -95,8 +92,8 @@ class _HomePageState extends State<ChannelPage>
                             ChannelTab(
                               videos: channelData.playlists.getPlaylist(0),
                             ),
-                            Center(child: Text('still under')),
-                            Center(child: Text('construction')),
+                            const Center(child: Text('still under')),
+                            const Center(child: Text('construction')),
                           ],
                         ),
                       ),
@@ -106,7 +103,7 @@ class _HomePageState extends State<ChannelPage>
               ],
             );
           } else {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }

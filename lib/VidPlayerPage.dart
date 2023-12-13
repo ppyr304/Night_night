@@ -77,7 +77,6 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                         setState(() {
                           ratio = MediaQuery.of(context).size.height /
                               (MediaQuery.of(context).size.width * 0.75);
-                          print(ratio);
                         });
                         SystemChrome.setPreferredOrientations([
                           DeviceOrientation.landscapeLeft,
@@ -104,7 +103,7 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                           exit(0);
                         },
                       ),
-                      builder: (BuildContext, player) {
+                      builder: (context, player) {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

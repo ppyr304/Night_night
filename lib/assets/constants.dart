@@ -123,7 +123,7 @@ ThemeData CustomDarkTheme() {
 List<String> prefixes = ['k', 'M', 'G', 'T', 'P'];
 
 String SubCount(double subCount) {
-  double num = subCount ?? 0;
+  double num = subCount;
 
   String count = "$num subscribers";
 
@@ -142,7 +142,7 @@ String timeAgo(DateTime? dateTime) {
     return 'idk';
   }
 
-  Duration difference = DateTime.now().difference(dateTime!);
+  Duration difference = DateTime.now().difference(dateTime);
 
   if (difference.inDays >= 365) {
     int years = (difference.inDays / 365).floor();
@@ -169,7 +169,7 @@ String formatDuration(Duration? inDuration) {
     return 'Unknown duration';
   }
 
-  Duration duration = inDuration!;
+  Duration duration = inDuration;
 
   int hours = duration.inHours;
   int minutes = duration.inMinutes.remainder(60);

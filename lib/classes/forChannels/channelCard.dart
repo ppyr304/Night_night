@@ -12,14 +12,14 @@ class ChannelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       child: ListTile(
         leading: CircleAvatar(
           backgroundImage: NetworkImage(item.logoUrl),
         ),
         title: Text(
           item.title,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
           SubCount(item.subscribersCount?.toDouble() ?? 0),

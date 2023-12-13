@@ -19,24 +19,22 @@ class VideoCard extends StatelessWidget {
               child: Align(
                 alignment: Alignment.center,
                 heightFactor: 0.75,
-                child: Container(
-                  child: Image(image: NetworkImage(item.thumbnails.highResUrl)),
-                ),
+                child: Image(image: NetworkImage(item.thumbnails.highResUrl)),
               ),
             ),
             ListTile(
               isThreeLine: true,
               title: Text(
                 item.title,
-                style: TextStyle(overflow: TextOverflow.ellipsis),
+                style: const TextStyle(overflow: TextOverflow.ellipsis),
                 maxLines: 2,
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${item.author}",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    item.author,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
                       '${formatDuration(item.duration)} | ${timeAgo(item.uploadDate)}'),

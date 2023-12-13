@@ -26,11 +26,9 @@ class _PlaylistCardState extends State<PlaylistCard> {
               child: Align(
                 alignment: Alignment.center,
                 heightFactor: 0.75,
-                child: Container(
-                  child: Image(
-                    image:
-                        NetworkImage(widget.firstVideo.thumbnails.highResUrl),
-                  ),
+                child: Image(
+                  image:
+                      NetworkImage(widget.firstVideo.thumbnails.highResUrl),
                 ),
               ),
             ),
@@ -38,7 +36,7 @@ class _PlaylistCardState extends State<PlaylistCard> {
               isThreeLine: true,
               title: Text(
                 widget.playlist.title,
-                style: TextStyle(overflow: TextOverflow.ellipsis),
+                style: const TextStyle(overflow: TextOverflow.ellipsis),
                 maxLines: 2,
               ),
               subtitle: Column(
@@ -46,7 +44,7 @@ class _PlaylistCardState extends State<PlaylistCard> {
                 children: [
                   Text(
                     "by ${widget.playlist.author}",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text("${widget.playlist.videoCount} videos"),
                 ],
