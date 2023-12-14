@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:youtube_player/classes/forPlaylist/playlistData.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistTile.dart';
 
-void buildSheet(BuildContext context, List<Video> playlist, int curr) {
+void buildSheet(BuildContext context, PlaylistData data) {
   showBottomSheet(
     context: context,
     builder: (context) {
@@ -11,9 +12,13 @@ void buildSheet(BuildContext context, List<Video> playlist, int curr) {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height / 2,
         child: ListView.builder(
-          itemCount: playlist.length,
+          itemCount: data.playlistVideos.length,
           itemBuilder: (context, index) {
-            return PlaylistTile(video: playlist[index], index: index, curr: curr,);
+            return PlaylistTile(
+              data: data,
+              index: index,
+              curr: data.curr,
+            );
           },
         ),
       );

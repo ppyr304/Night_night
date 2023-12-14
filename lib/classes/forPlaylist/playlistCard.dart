@@ -60,6 +60,7 @@ class _PlaylistCardState extends State<PlaylistCard> {
                 playlist: widget.playlist,
                 item: widget.firstVideo,
                 isPlaylist: true,
+                curr: 0,
               ),
             ),
           );

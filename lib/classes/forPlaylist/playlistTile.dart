@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:youtube_player/classes/forPlaylist/playlistData.dart';
+
+import '../../VidPlayerPage.dart';
 
 class PlaylistTile extends StatelessWidget {
   const PlaylistTile(
-      {super.key,
-      required this.video,
-      required this.index,
-      required this.curr});
-  final Video video;
+      {super.key, required this.data, required this.index, required this.curr});
+
+  final PlaylistData data;
   final int index;
   final int curr;
 
@@ -16,19 +17,32 @@ class PlaylistTile extends StatelessWidget {
     return Row(
       children: [
         (curr == index)
-            ? const Icon(
-                Icons.arrow_right,
-                color: Colors.red,
+            ? const SizedBox(
+                width: 28,
+                child: Icon(
+                  Icons.arrow_right,
+                  color: Colors.red,
+                ),
               )
-            : Text((index + 1).toString()),
+            : SizedBox(width: 17, child: Text((index + 1).toString())),
         Expanded(
           child: ListTile(
-            leading: Image.network(video.thumbnails.maxResUrl),
-            title: Text(video.title),
+            leading:
+                Image.network(data.playlistVideos[index].thumbnails.maxResUrl),
+            title: Text(data.playlistVideos[index].title),
             subtitle: Text(
-              video.author,
+              data.playlistVideos[index].author,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => VidPlayerPage(
+                        isPlaylist: true,
+                        item: data.playlistVideos[index],
+                        playlist: data.playlist,
+                        curr: index,
+                      )));
+            },
           ),
         ),
       ],

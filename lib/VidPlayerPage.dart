@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/assets/constants.dart';
+import 'package:youtube_player/classes/forPlaylist/playlistData.dart';
 import 'package:youtube_player/classes/others/otherVideoList.dart';
 import 'package:youtube_player/statics/APIService.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -12,11 +13,18 @@ import 'classes/forPlaylist/botSheetList.dart';
 
 class VidPlayerPage extends StatefulWidget {
   const VidPlayerPage(
-      {super.key, required this.isPlaylist, required this.item, this.playlist});
+      {super.key,
+      required this.isPlaylist,
+      this.item,
+      this.playlist,
+      this.curr,
+      this.playlistVideos});
 
   final Playlist? playlist;
-  final Video item;
+  final Video? item;
   final bool isPlaylist;
+  final int? curr;
+  final List<Video>? playlistVideos;
 
   @override
   State<VidPlayerPage> createState() => _VidPlayerPageState();
@@ -24,6 +32,7 @@ class VidPlayerPage extends StatefulWidget {
 
 class _VidPlayerPageState extends State<VidPlayerPage> {
   late Future<YoutubePlayerController> ytController;
+  late PlaylistData pdata;
   List<Video> allVids = [];
   bool ready = false;
   bool show = false;
@@ -31,13 +40,29 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
   Future<void> fetchPlaylistVideo() async {
     allVids = await APIService.instance
         .fetchPlaylistVideos(widget.playlist!.id.toString());
+
+    setState(() {
+      pdata.playlistVideos = allVids;
+      pdata.ready = true;
+    });
   }
 
   @override
   void initState() {
     super.initState();
     ytController = getController();
-    fetchPlaylistVideo();
+    if (widget.playlistVideos == null) {
+      fetchPlaylistVideo();
+    } else {
+      allVids = widget.playlistVideos!;
+    }
+
+    pdata = PlaylistData(
+      playlist: widget.playlist!,
+      item: widget.item!,
+      playlistVideos: allVids,
+      curr: widget.curr!,
+    );
 
     setState(() {
       ready = true;
@@ -46,18 +71,16 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
 
   Future<YoutubePlayerController> getController() async {
     YoutubePlayerController yt = YoutubePlayerController(
-      initialVideoId: widget.item.id.toString(),
+      initialVideoId: widget.item!.id.toString(),
       flags: const YoutubePlayerFlags(
         mute: false,
-        autoPlay: false,
-        loop: true,
+        autoPlay: true,
+        loop: false,
       ),
     );
 
     return yt;
   }
-
-  void bottSheet() {}
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +124,22 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                         controller: snapshot.data!,
                         showVideoProgressIndicator: true,
                         onEnded: (ytContext) {
-                          exit(0);
+                          if (widget.playlist != null) {
+                            if (widget.curr == pdata.playlistVideos.length-1) {
+                              exit(0);
+                            } else {
+                              int next = widget.curr! + 1;
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => VidPlayerPage(
+                                        isPlaylist: true,
+                                        item: allVids[next],
+                                        playlist: widget.playlist,
+                                        curr: next,
+                                      )));
+                            }
+                          } else {
+                            exit(0);
+                          }
                         },
                       ),
                       builder: (context, player) {
@@ -114,7 +152,7 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                               contentPadding:
                                   const EdgeInsets.symmetric(horizontal: 8),
                               title: Text(
-                                widget.item.title,
+                                widget.item!.title,
                                 maxLines: 2,
                                 style: TextStyle(
                                   color: Theme.of(context)
@@ -126,7 +164,7 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                 ),
                               ),
                               subtitle: Text(
-                                timeAgo(widget.item.uploadDate),
+                                timeAgo(widget.item!.uploadDate),
                                 style: TextStyle(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -150,7 +188,7 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                         vertical: 0,
                                       ),
                                       title: Text(
-                                        widget.item.author,
+                                        widget.item!.author,
                                         maxLines: 1,
                                         style: TextStyle(
                                           color: Theme.of(context)
@@ -164,16 +202,18 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                   ),
                                   if (widget.isPlaylist)
                                     OutlinedButton(
+                                      onPressed: (pdata.ready == true)
+                                          ? () {
+                                              show = !show;
+                                              if (show == true) {
+                                                buildSheet(context, pdata);
+                                              } else {
+                                                Navigator.of(context).pop();
+                                              }
+                                              setState(() {});
+                                            }
+                                          : null,
                                       child: const Text('show playlist'),
-                                      onPressed: () {
-                                        show = !show;
-                                        if (show == true) {
-                                          buildSheet(context, allVids,1);
-                                        } else {
-                                          Navigator.of(context).pop();
-                                        }
-                                        setState(() {});
-                                      },
                                     )
                                   else
                                     Container(),
@@ -186,7 +226,7 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                             ),
                             Expanded(
                               child: OtherVideoList(
-                                query: widget.item.title,
+                                query: widget.item!.title,
                               ),
                             ),
                           ],
