@@ -168,7 +168,7 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                       onPressed: () {
                                         show = !show;
                                         if (show == true) {
-                                          buildSheet(context, allVids);
+                                          buildSheet(context, allVids,1);
                                         } else {
                                           Navigator.of(context).pop();
                                         }
