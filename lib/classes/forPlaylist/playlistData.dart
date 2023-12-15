@@ -1,6 +1,5 @@
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-import '../../statics/APIService.dart';
 
 class PlaylistData {
   Playlist playlist;

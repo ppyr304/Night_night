@@ -75,12 +75,10 @@ class _HomePageState extends State<ChannelPage>
                   child: Column(
                     children: [
                       TabBar(
-                        labelColor: Theme.of(context).canvasColor,
-                        unselectedLabelColor: Theme.of(context).dividerColor,
                         isScrollable: true,
                         controller: _tabController,
                         tabs: const [
-                          Tab(text: 'uploads'),
+                          Tab(text: 'recent uploads'),
                           Tab(text: 'something'),
                           Tab(text: 'else'),
                         ],
