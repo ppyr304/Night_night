@@ -19,9 +19,11 @@ class _HomePageState extends State<ChannelPage>
   late TabController _tabController;
 
   late ChannelData channelData;
+  List<Video> uploads = [];
 
   Future<void> _getChannelData() async {
     channelData = await APIService.instance.fetchChannelData(widget.item);
+    // uploads = await APIService.instance.fetchChannelUploads(widget.item);
   }
 
   @override
@@ -78,7 +80,7 @@ class _HomePageState extends State<ChannelPage>
                         isScrollable: true,
                         controller: _tabController,
                         tabs: const [
-                          Tab(text: 'recent uploads'),
+                          Tab(text: 'uploads'),
                           Tab(text: 'something'),
                           Tab(text: 'else'),
                         ],
@@ -88,7 +90,7 @@ class _HomePageState extends State<ChannelPage>
                           controller: _tabController,
                           children: [
                             ChannelTab(
-                              videos: channelData.playlists.getPlaylist(0),
+                              videos: uploads,
                             ),
                             const Center(child: Text('still under')),
                             const Center(child: Text('construction')),

@@ -139,6 +139,13 @@ class _HomePageState extends State<HomePage>
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.settings),
+            tooltip: "settings",
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -216,30 +223,22 @@ class _HomePageState extends State<HomePage>
               child: TabBarView(
                 controller: _mainTabController,
                 children: [
-                  // MyTabViewItem(
-                  //   data: data,
-                  //   list: _VideoList,
-                  // ),
-                  // MyTabViewItem(
-                  //   data: data,
-                  //   list: _ChannelList,
-                  // ),
-                  // MyTabViewItem(
-                  //   data: data,
-                  //   list: _PlaylistList,
-                  //   list2: _firstVids,
-                  // ),
-
                   FutureBuilder(
                       future: data,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
-                            itemCount: _VideoList.length,
+                            itemCount: _VideoList.length + 1,
                             itemBuilder: (context, index) {
-                              return VideoCard(
-                                item: _VideoList[index],
-                              );
+                              if (index < _VideoList.length) {
+                                return VideoCard(
+                                  item: _VideoList[index],
+                                );
+                              } else {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
                             },
                           );
                         } else if (snapshot.connectionState ==

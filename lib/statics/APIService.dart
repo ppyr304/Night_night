@@ -114,6 +114,43 @@ class APIService {
     return channelData;
   }
 
+  Future<Video> getCompleteData(Video video) async {
+    YoutubeExplode yte = YoutubeExplode();
+    Video actual;
+
+    try {
+      actual = await yte.videos.get(video.id);
+    } finally {
+      yte.close();
+    }
+
+    return actual;
+  }
+
+  Future<List<Video>> fetchChannelUploads(Channel channel) async {
+    YoutubeExplode yte = YoutubeExplode();
+    List<Future<Video>> futures = [];
+    List<Video> uploads = [];
+
+    try {
+      await for (var video in yte.channels.getUploads(channel.id)) {
+        futures.add(getCompleteData(video));
+
+        if (futures.length >= 10) {
+          uploads.addAll(await Future.wait(futures));
+          futures.clear();
+        }
+      }
+
+      // Process any remaining videos
+      // uploads.addAll(await Future.wait(futures));
+    } finally {
+      yte.close();
+    }
+
+    return uploads;
+  }
+
   Future<List<Video>> fetchVideos(String listId) async {
     YoutubeExplode ytExplode = YoutubeExplode();
     List<Video> playlist = [];
@@ -221,7 +258,6 @@ class APIService {
       await yte.playlists.getVideos(playlistID).forEach((element) {
         videos.add(element);
       });
-
     } catch (error) {
       log('${DateTime.now()} Error: $error');
     }
