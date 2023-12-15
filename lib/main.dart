@@ -36,6 +36,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController _mainTabController;
+  final vidcontroller = ScrollController();
+  final chacontroller = ScrollController();
+  final placontroller = ScrollController();
 
   Future<String>? data;
   String searchQuery = "";
@@ -62,7 +65,7 @@ class _HomePageState extends State<HomePage>
 
   //search funcs
   Future<String> searchVideos() async {
-    _VideoList = await APIService.instance.getAllVideos(searchQuery);
+    _VideoList.addAll(await APIService.instance.getAllVideos(searchQuery));
 
     // Set your target date, for example, the current date and time
     DateTime targetDate = DateTime.now();
@@ -81,18 +84,21 @@ class _HomePageState extends State<HomePage>
       }
     });
 
+    print(_VideoList.length);
+    setState(() {});
     return "video search finished";
   }
 
   Future<String> searchChannels() async {
-    _ChannelList = await APIService.instance.getAllChannels(searchQuery);
+    _ChannelList.addAll(await APIService.instance.getAllChannels(searchQuery));
 
+    print(_ChannelList.length);
+    setState(() {});
     return "channel search finished";
   }
 
   Future<String> searchPlaylists() async {
-    _firstVids.clear();
-    _PlaylistList = await APIService.instance.fetchPlaylist(searchQuery);
+    _PlaylistList.addAll(await APIService.instance.fetchPlaylist(searchQuery));
 
     return await getPlaylistPic();
   }
@@ -103,11 +109,19 @@ class _HomePageState extends State<HomePage>
           .getFirstVideo(_PlaylistList[x].id.toString()));
     }
 
+    print(_PlaylistList.length);
+    print(_firstVids.length);
+    setState(() {});
     return "playlist search finished";
   }
 
   Future<String> search() async {
     _node.unfocus();
+
+    _VideoList.clear();
+    _ChannelList.clear();
+    _PlaylistList.clear();
+    _firstVids.clear();
 
     List<Future<String>> futures = [
       searchVideos(),
@@ -120,6 +134,7 @@ class _HomePageState extends State<HomePage>
     return "All searches completed";
   }
 
+  //other funcs
   void setFilter(int num) {
     setState(() {
       filter = num;
@@ -131,6 +146,22 @@ class _HomePageState extends State<HomePage>
     // TODO: implement initState
     super.initState();
     _mainTabController = TabController(length: 3, vsync: this);
+
+    vidcontroller.addListener(() {
+      if (vidcontroller.position.maxScrollExtent == vidcontroller.offset) {
+        searchVideos();
+      }
+    });
+    chacontroller.addListener(() {
+      if (chacontroller.position.maxScrollExtent == chacontroller.offset) {
+        searchChannels();
+      }
+    });
+    placontroller.addListener(() {
+      if (placontroller.position.maxScrollExtent == placontroller.offset) {
+        searchPlaylists();
+      }
+    });
   }
 
   @override
@@ -228,6 +259,7 @@ class _HomePageState extends State<HomePage>
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
+                            controller: vidcontroller,
                             itemCount: _VideoList.length + 1,
                             itemBuilder: (context, index) {
                               if (index < _VideoList.length) {
@@ -255,11 +287,18 @@ class _HomePageState extends State<HomePage>
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
-                            itemCount: _ChannelList.length,
+                            controller: chacontroller,
+                            itemCount: _ChannelList.length + 1,
                             itemBuilder: (context, index) {
-                              return ChannelCard(
-                                item: _ChannelList[index],
-                              );
+                              if (index < _ChannelList.length) {
+                                return ChannelCard(
+                                  item: _ChannelList[index],
+                                );
+                              } else {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
                             },
                           );
                         } else if (snapshot.connectionState ==
@@ -276,12 +315,19 @@ class _HomePageState extends State<HomePage>
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
-                            itemCount: _PlaylistList.length,
+                            controller: placontroller,
+                            itemCount: _PlaylistList.length + 1,
                             itemBuilder: (context, index) {
-                              return PlaylistCard(
-                                playlist: _PlaylistList[index],
-                                firstVideo: _firstVids[index],
-                              );
+                              if (index < _PlaylistList.length) {
+                                return PlaylistCard(
+                                  playlist: _PlaylistList[index],
+                                  firstVideo: _firstVids[index],
+                                );
+                              } else {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
                             },
                           );
                         } else if (snapshot.connectionState ==

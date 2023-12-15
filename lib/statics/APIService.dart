@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/classes/forChannels/channelData.dart';
 import 'package:http/http.dart' as http;
+import 'package:youtube_player/statics/dupTracker.dart';
 
 import 'keys.dart';
 
@@ -11,6 +12,7 @@ class APIService {
 
   static final APIService instance = APIService._instantiate();
 
+  DupTracker dt = DupTracker();
   final String baseURL = "https://www.googleapis.com/youtube/v3/";
   String _PageToken = '';
 
