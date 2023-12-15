@@ -16,6 +16,10 @@ class APIService {
   final String baseURL = "https://www.googleapis.com/youtube/v3/";
   String _PageToken = '';
 
+  void clearTracker() {
+    dt.clearAll();
+  }
+
   Future<List<Channel>> getAllChannels(String query) async {
     final ytExplode = YoutubeExplode();
     final client = ytExplode.channels;
@@ -65,6 +69,15 @@ class APIService {
 
     try {
       videos = await client.search(query);
+
+      for (var element in videos) {
+        if (dt.fetchedVideoIds.contains(element.id)) {
+          videos.remove(element);
+        } else {
+          dt.fetchedVideoIds.add(element.id);
+        }
+      }
+
     } catch (error) {
       log('${DateTime.now()} Error: $error');
     }

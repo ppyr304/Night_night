@@ -122,6 +122,7 @@ class _HomePageState extends State<HomePage>
     _ChannelList.clear();
     _PlaylistList.clear();
     _firstVids.clear();
+    APIService.instance.clearTracker();
 
     List<Future<String>> futures = [
       searchVideos(),
