@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/classes/forChannels/channelData.dart';
+import 'package:youtube_player/classes/forChannels/uploadTab.dart';
 
 import 'assets/constants.dart';
 import 'classes/forChannels/channelTab.dart';
@@ -17,19 +18,53 @@ class ChannelPage extends StatefulWidget {
 class _HomePageState extends State<ChannelPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final controller = ScrollController();
 
   late ChannelData channelData;
   List<Video> uploads = [];
+  int tracker = 0;
+  bool reachedEnd = false;
 
   Future<void> _getChannelData() async {
     channelData = await APIService.instance.fetchChannelData(widget.item);
-    // uploads = await APIService.instance.fetchChannelUploads(widget.item);
+  }
+
+  Future<void> _getUploadsData() async {
+    int temp = uploads.length;
+    uploads.addAll(
+        await APIService.instance.fetchChannelUploads(widget.item, tracker));
+    tracker = uploads.length;
+    if (temp == tracker) {
+      reachedEnd = true;
+    }
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _getChannelData();
+    _getUploadsData();
+
+    controller.addListener(() {
+      if (controller.position.maxScrollExtent == controller.offset) {
+        _getUploadsData();
+        print('fetching more');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    _tabController.dispose();
+    controller.dispose();
+    uploads = [];
+    tracker = 0;
+    reachedEnd = false;
   }
 
   @override
@@ -62,8 +97,7 @@ class _HomePageState extends State<ChannelPage>
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        SubCount(
-                            widget.item.subscribersCount?.toDouble() ?? 0),
+                        SubCount(widget.item.subscribersCount?.toDouble() ?? 0),
                       ),
                       Text(
                         '${channelData.totalVideoCount} videos uploaded',
@@ -86,15 +120,20 @@ class _HomePageState extends State<ChannelPage>
                         ],
                       ),
                       Expanded(
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: [
-                            ChannelTab(
-                              videos: uploads,
-                            ),
-                            const Center(child: Text('still under')),
-                            const Center(child: Text('construction')),
-                          ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TabBarView(
+                            controller: _tabController,
+                            children: [
+                              UploadTab(
+                                uploads: uploads,
+                                controller: controller,
+                                reachedEnd: reachedEnd,
+                              ),
+                              const Center(child: Text('still under')),
+                              const Center(child: Text('construction')),
+                            ],
+                          ),
                         ),
                       ),
                     ],

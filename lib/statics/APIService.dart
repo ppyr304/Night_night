@@ -51,13 +51,13 @@ class APIService {
           Channel temp = await client.get(channelId);
 
           channelList.add(temp);
+        }
 
-          for (var element in channelList) {
-            if (DupTracker.instance.fetchedChannelIds.contains(element.id)) {
-              channelList.remove(element);
-            } else {
-              DupTracker.instance.fetchedChannelIds.add(element.id);
-            }
+        for (var element in channelList) {
+          if (DupTracker.instance.fetchedChannelIds.contains(element.id)) {
+            channelList.remove(element);
+          } else {
+            DupTracker.instance.fetchedChannelIds.add(element.id);
           }
         }
       }
@@ -84,7 +84,6 @@ class APIService {
           DupTracker.instance.fetchedVideoIds.add(element.id);
         }
       }
-
     } catch (error) {
       log('${DateTime.now()} Error: $error');
     }
@@ -123,9 +122,9 @@ class APIService {
           String totalVideoCount = item['statistics']['videoCount'];
 
           channelData.playlistIds.add(PlaylistsId);
-          List<Video> temp = await fetchVideos(PlaylistsId);
-          channelData.playlists.addPlaylist(temp);
-          channelData.videoCounts.add(temp.length);
+          // List<Video> temp = await fetchVideos(PlaylistsId);
+          // channelData.playlists.addPlaylist(temp);
+          // channelData.videoCounts.add(temp.length);
           channelData.totalVideoCount = int.parse(totalVideoCount);
         }
       }
@@ -149,23 +148,20 @@ class APIService {
     return actual;
   }
 
-  Future<List<Video>> fetchChannelUploads(Channel channel) async {
+  Future<List<Video>> fetchChannelUploads(Channel channel, int tracker) async {
     YoutubeExplode yte = YoutubeExplode();
-    List<Future<Video>> futures = [];
+    List<Video> temp = [];
     List<Video> uploads = [];
 
     try {
       await for (var video in yte.channels.getUploads(channel.id)) {
-        futures.add(getCompleteData(video));
-
-        if (futures.length >= 10) {
-          uploads.addAll(await Future.wait(futures));
-          futures.clear();
-        }
+        temp.add(video);
       }
 
-      // Process any remaining videos
-      // uploads.addAll(await Future.wait(futures));
+      for (int x = tracker; x < (tracker + 10) && x < temp.length; x++) {
+        uploads.add(await getCompleteData(temp[x]));
+      }
+
     } finally {
       yte.close();
     }

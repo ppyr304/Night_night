@@ -5,6 +5,7 @@ import 'package:youtube_player/classes/forPlaylist/playlistCard.dart';
 import 'package:youtube_player/statics/dupTracker.dart';
 import 'classes/forChannels/channelCard.dart';
 import 'classes/forVideos/videoCard.dart';
+import 'classes/others/searchData.dart';
 import 'statics/APIService.dart';
 
 void main() {
@@ -41,38 +42,27 @@ class _HomePageState extends State<HomePage>
   final chacontroller = ScrollController();
   final placontroller = ScrollController();
 
-  Future<String>? data;
-  String searchQuery = "";
-  final List<Video> _VideoList = [];
-  final List<Channel> _ChannelList = [];
-  final List<Playlist> _PlaylistList = [];
-  final List<Video> _firstVids = [];
+  SearchData sd = SearchData();
+
   var editor = TextEditingController();
   final FocusNode _node = FocusNode();
   int filter = 0;
+
   List<String> presets_1 = [
     "Enter Video Name...",
     "Enter Channel Name...",
     "Enter Playlist Name...",
   ];
 
-  List<Text> presets_2 = [
-    const Text("find video"),
-    const Text("find channel"),
-    const Text("find playlist"),
-  ];
-
-  String selectedItem = 'videos';
-
   //search funcs
   Future<String> searchVideos() async {
-    int length = _VideoList.length;
-    _VideoList.addAll(await APIService.instance.getAllVideos(searchQuery));
+    int length = sd.videoList.length;
+    sd.videoList.addAll(await APIService.instance.getAllVideos(sd.searchQuery));
 
     // Set your target date, for example, the current date and time
     DateTime targetDate = DateTime.now();
 
-    _VideoList.sort((a, b) {
+    sd.videoList.sort((a, b) {
       if (a.uploadDate == null && b.uploadDate == null) {
         return 0;
       } else if (a.uploadDate == null) {
@@ -86,7 +76,7 @@ class _HomePageState extends State<HomePage>
       }
     });
 
-    if (length == _VideoList.length) {
+    if (length == sd.videoList.length) {
       DupTracker.instance.videoLimitReached;
     }
     setState(() {});
@@ -94,22 +84,21 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<String> searchChannels() async {
-    int length = _ChannelList.length;
-    _ChannelList.addAll(await APIService.instance.getAllChannels(searchQuery));
+    int length = sd.channelList.length;
+    sd.channelList.addAll(await APIService.instance.getAllChannels(sd.searchQuery));
 
-    if (length == _ChannelList.length) {
+    if (length == sd.channelList.length) {
       DupTracker.instance.channelLimitReached;
     }
-    print(_ChannelList.length);
     setState(() {});
     return "channel search finished";
   }
 
   Future<String> searchPlaylists() async {
-    int length = _PlaylistList.length;
-    _PlaylistList.addAll(await APIService.instance.fetchPlaylist(searchQuery));
+    int length = sd.playlistList.length;
+    sd.playlistList.addAll(await APIService.instance.fetchPlaylist(sd.searchQuery));
 
-    if (length == _PlaylistList.length) {
+    if (length == sd.playlistList.length) {
       DupTracker.instance.playlistLimitReached;
       return 'limit reached';
     } else {
@@ -118,32 +107,26 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<String> getPlaylistPic() async {
-    for (int x = 0; x < _PlaylistList.length; x++) {
-      _firstVids.add(await APIService.instance
-          .getFirstVideo(_PlaylistList[x].id.toString()));
+    for (int x = 0; x < sd.playlistList.length; x++) {
+      sd.firstVids.add(await APIService.instance
+          .getFirstVideo(sd.playlistList[x].id.toString()));
     }
     setState(() {});
     return "playlist search finished";
   }
 
-  Future<String> search() async {
-    _node.unfocus();
+  Future<void> initSearch () async {
+    sd.vdata = searchVideos();
+    sd.cdata = searchChannels();
+    sd.pdata = searchPlaylists();
+  }
 
-    _VideoList.clear();
-    _ChannelList.clear();
-    _PlaylistList.clear();
-    _firstVids.clear();
+  Future<void> search() async {
+    _node.unfocus();
+    sd.clearList();
     APIService.instance.resetTracker();
 
-    List<Future<String>> futures = [
-      searchVideos(),
-      searchChannels(),
-      searchPlaylists(),
-    ];
-
-    await Future.wait(futures);
-
-    return "All searches completed";
+    await initSearch();
   }
 
   //other funcs
@@ -219,11 +202,11 @@ class _HomePageState extends State<HomePage>
                         ),
                         onChanged: (value) {
                           setState(() {
-                            searchQuery = value;
+                            sd.searchQuery = value;
                           });
                         },
                         onEditingComplete: () {
-                          data = search();
+                          search();
                           setState(() {});
                         },
                       ),
@@ -235,7 +218,7 @@ class _HomePageState extends State<HomePage>
                       ),
                       onTap: () {
                         setState(() {
-                          searchQuery = "";
+                          sd.searchQuery = "";
                           editor.clear();
                         });
                       },
@@ -244,7 +227,7 @@ class _HomePageState extends State<HomePage>
                     GestureDetector(
                       child: const Icon(Icons.search_rounded),
                       onTap: () {
-                        data = search();
+                        search();
                         setState(() {});
                       },
                     ),
@@ -269,16 +252,16 @@ class _HomePageState extends State<HomePage>
                 controller: _mainTabController,
                 children: [
                   FutureBuilder(
-                      future: data,
+                      future: sd.vdata,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
                             controller: vidcontroller,
-                            itemCount: _VideoList.length + 1,
+                            itemCount: sd.videoList.length + 1,
                             itemBuilder: (context, index) {
-                              if (index < _VideoList.length) {
+                              if (index < sd.videoList.length) {
                                 return VideoCard(
-                                  item: _VideoList[index],
+                                  item: sd.videoList[index],
                                 );
                               } else {
                                 if ((DupTracker.instance.videoLimitReached)) {
@@ -304,16 +287,16 @@ class _HomePageState extends State<HomePage>
                         }
                       }),
                   FutureBuilder(
-                      future: data,
+                      future: sd.cdata,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
                             controller: chacontroller,
-                            itemCount: _ChannelList.length + 1,
+                            itemCount: sd.channelList.length + 1,
                             itemBuilder: (context, index) {
-                              if (index < _ChannelList.length) {
+                              if (index < sd.channelList.length) {
                                 return ChannelCard(
-                                  item: _ChannelList[index],
+                                  item: sd.channelList[index],
                                 );
                               } else {
                                 if ((DupTracker.instance.channelLimitReached)) {
@@ -339,17 +322,17 @@ class _HomePageState extends State<HomePage>
                         }
                       }),
                   FutureBuilder(
-                      future: data,
+                      future: sd.pdata,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
                             controller: placontroller,
-                            itemCount: _PlaylistList.length + 1,
+                            itemCount: sd.playlistList.length + 1,
                             itemBuilder: (context, index) {
-                              if (index < _PlaylistList.length) {
+                              if (index < sd.playlistList.length) {
                                 return PlaylistCard(
-                                  playlist: _PlaylistList[index],
-                                  firstVideo: _firstVids[index],
+                                  playlist: sd.playlistList[index],
+                                  firstVideo: sd.firstVids[index],
                                 );
                               } else {
                                 if ((DupTracker.instance.playlistLimitReached)) {
