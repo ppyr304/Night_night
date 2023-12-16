@@ -12,12 +12,11 @@ class APIService {
 
   static final APIService instance = APIService._instantiate();
 
-  DupTracker dt = DupTracker();
   final String baseURL = "https://www.googleapis.com/youtube/v3/";
   String _PageToken = '';
 
-  void clearTracker() {
-    dt.clearAll();
+  void resetTracker() {
+    DupTracker.instance.resetAll();
   }
 
   Future<List<Channel>> getAllChannels(String query) async {
@@ -52,6 +51,14 @@ class APIService {
           Channel temp = await client.get(channelId);
 
           channelList.add(temp);
+
+          for (var element in channelList) {
+            if (DupTracker.instance.fetchedChannelIds.contains(element.id)) {
+              channelList.remove(element);
+            } else {
+              DupTracker.instance.fetchedChannelIds.add(element.id);
+            }
+          }
         }
       }
     } catch (error) {
@@ -71,10 +78,10 @@ class APIService {
       videos = await client.search(query);
 
       for (var element in videos) {
-        if (dt.fetchedVideoIds.contains(element.id)) {
+        if (DupTracker.instance.fetchedVideoIds.contains(element.id)) {
           videos.remove(element);
         } else {
-          dt.fetchedVideoIds.add(element.id);
+          DupTracker.instance.fetchedVideoIds.add(element.id);
         }
       }
 
@@ -246,6 +253,14 @@ class APIService {
 
           Playlist playlist = await ytExplode.playlists.get(id);
           allPlaylist.add(playlist);
+        }
+      }
+
+      for (var element in allPlaylist) {
+        if (DupTracker.instance.fetchedPlaylistIds.contains(element.id)) {
+          allPlaylist.remove(element);
+        } else {
+          DupTracker.instance.fetchedPlaylistIds.add(element.id);
         }
       }
     } catch (error) {

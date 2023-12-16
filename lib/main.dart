@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistCard.dart';
+import 'package:youtube_player/statics/dupTracker.dart';
 import 'classes/forChannels/channelCard.dart';
 import 'classes/forVideos/videoCard.dart';
 import 'statics/APIService.dart';
@@ -42,9 +43,9 @@ class _HomePageState extends State<HomePage>
 
   Future<String>? data;
   String searchQuery = "";
-  List<Video> _VideoList = [];
-  List<Channel> _ChannelList = [];
-  List<Playlist> _PlaylistList = [];
+  final List<Video> _VideoList = [];
+  final List<Channel> _ChannelList = [];
+  final List<Playlist> _PlaylistList = [];
   final List<Video> _firstVids = [];
   var editor = TextEditingController();
   final FocusNode _node = FocusNode();
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage>
 
   //search funcs
   Future<String> searchVideos() async {
+    int length = _VideoList.length;
     _VideoList.addAll(await APIService.instance.getAllVideos(searchQuery));
 
     // Set your target date, for example, the current date and time
@@ -84,23 +86,35 @@ class _HomePageState extends State<HomePage>
       }
     });
 
-    print(_VideoList.length);
+    if (length == _VideoList.length) {
+      DupTracker.instance.videoLimitReached;
+    }
     setState(() {});
     return "video search finished";
   }
 
   Future<String> searchChannels() async {
+    int length = _ChannelList.length;
     _ChannelList.addAll(await APIService.instance.getAllChannels(searchQuery));
 
+    if (length == _ChannelList.length) {
+      DupTracker.instance.channelLimitReached;
+    }
     print(_ChannelList.length);
     setState(() {});
     return "channel search finished";
   }
 
   Future<String> searchPlaylists() async {
+    int length = _PlaylistList.length;
     _PlaylistList.addAll(await APIService.instance.fetchPlaylist(searchQuery));
 
-    return await getPlaylistPic();
+    if (length == _PlaylistList.length) {
+      DupTracker.instance.playlistLimitReached;
+      return 'limit reached';
+    } else {
+      return await getPlaylistPic();
+    }
   }
 
   Future<String> getPlaylistPic() async {
@@ -108,9 +122,6 @@ class _HomePageState extends State<HomePage>
       _firstVids.add(await APIService.instance
           .getFirstVideo(_PlaylistList[x].id.toString()));
     }
-
-    print(_PlaylistList.length);
-    print(_firstVids.length);
     setState(() {});
     return "playlist search finished";
   }
@@ -122,7 +133,7 @@ class _HomePageState extends State<HomePage>
     _ChannelList.clear();
     _PlaylistList.clear();
     _firstVids.clear();
-    APIService.instance.clearTracker();
+    APIService.instance.resetTracker();
 
     List<Future<String>> futures = [
       searchVideos(),
@@ -149,17 +160,20 @@ class _HomePageState extends State<HomePage>
     _mainTabController = TabController(length: 3, vsync: this);
 
     vidcontroller.addListener(() {
-      if (vidcontroller.position.maxScrollExtent == vidcontroller.offset) {
+      if (vidcontroller.position.maxScrollExtent == vidcontroller.offset &&
+          DupTracker.instance.videoLimitReached == false) {
         searchVideos();
       }
     });
     chacontroller.addListener(() {
-      if (chacontroller.position.maxScrollExtent == chacontroller.offset) {
+      if (chacontroller.position.maxScrollExtent == chacontroller.offset &&
+          DupTracker.instance.channelLimitReached == false) {
         searchChannels();
       }
     });
     placontroller.addListener(() {
-      if (placontroller.position.maxScrollExtent == placontroller.offset) {
+      if (placontroller.position.maxScrollExtent == placontroller.offset &&
+          DupTracker.instance.playlistLimitReached == false) {
         searchPlaylists();
       }
     });
@@ -167,7 +181,6 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    List<String> ddItems = ['videos', 'channels', 'playlists'];
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -268,9 +281,16 @@ class _HomePageState extends State<HomePage>
                                   item: _VideoList[index],
                                 );
                               } else {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                                if ((DupTracker.instance.videoLimitReached)) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("Couldn't find more"),
+                                  );
+                                } else {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
                               }
                             },
                           );
@@ -296,9 +316,16 @@ class _HomePageState extends State<HomePage>
                                   item: _ChannelList[index],
                                 );
                               } else {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                                if ((DupTracker.instance.channelLimitReached)) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("Couldn't find more"),
+                                  );
+                                } else {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
                               }
                             },
                           );
@@ -325,9 +352,16 @@ class _HomePageState extends State<HomePage>
                                   firstVideo: _firstVids[index],
                                 );
                               } else {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                                if ((DupTracker.instance.playlistLimitReached)) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text("Couldn't find more"),
+                                  );
+                                } else {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
                               }
                             },
                           );
