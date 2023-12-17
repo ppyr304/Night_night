@@ -57,46 +57,46 @@ class _HomePageState extends State<HomePage>
   //search funcs
   Future<String> searchVideos() async {
     int length = sd.videoList.length;
-    sd.videoList.addAll(await APIService.instance.getAllVideos(sd.searchQuery));
-
-    // Set your target date, for example, the current date and time
-    DateTime targetDate = DateTime.now();
-
-    sd.videoList.sort((a, b) {
-      if (a.uploadDate == null && b.uploadDate == null) {
-        return 0;
-      } else if (a.uploadDate == null) {
-        return 1; // Move items with null DateTime to the end
-      } else if (b.uploadDate == null) {
-        return -1; // Move items with null DateTime to the end
-      } else {
-        var x = b.uploadDate!.difference(targetDate);
-        var y = a.uploadDate!.difference(targetDate);
-        return x.compareTo(y);
-      }
-    });
+    // sd.videoList.addAll(await APIService.instance.getAllVideos(sd.searchQuery));
+    List<Video> videosToAdd =
+        await APIService.instance.getAllVideos(sd.searchQuery);
+    for (var video in videosToAdd) {
+      sd.videoList.add(video);
+    }
 
     if (length == sd.videoList.length) {
       DupTracker.instance.videoLimitReached;
     }
-    setState(() {});
     return "video search finished";
   }
 
   Future<String> searchChannels() async {
     int length = sd.channelList.length;
-    sd.channelList.addAll(await APIService.instance.getAllChannels(sd.searchQuery));
+    // sd.channelList
+    //     .addAll(await APIService.instance.getAllChannels(sd.searchQuery));
+    List<Channel> channelToAdd =
+        await APIService.instance.getAllChannels(sd.searchQuery);
+
+    for (var channel in channelToAdd) {
+      sd.channelList.add(channel);
+    }
 
     if (length == sd.channelList.length) {
       DupTracker.instance.channelLimitReached;
     }
-    setState(() {});
     return "channel search finished";
   }
 
   Future<String> searchPlaylists() async {
     int length = sd.playlistList.length;
-    sd.playlistList.addAll(await APIService.instance.fetchPlaylist(sd.searchQuery));
+    // sd.playlistList
+    //     .addAll(await APIService.instance.fetchPlaylist(sd.searchQuery));
+    List<Playlist> playlistToAdd =
+        await APIService.instance.fetchPlaylist(sd.searchQuery);
+
+    for (var playlist in playlistToAdd) {
+      sd.playlistList.add(playlist);
+    }
 
     if (length == sd.playlistList.length) {
       DupTracker.instance.playlistLimitReached;
@@ -111,11 +111,10 @@ class _HomePageState extends State<HomePage>
       sd.firstVids.add(await APIService.instance
           .getFirstVideo(sd.playlistList[x].id.toString()));
     }
-    setState(() {});
     return "playlist search finished";
   }
 
-  Future<void> initSearch () async {
+  Future<void> initSearch() async {
     sd.vdata = searchVideos();
     sd.cdata = searchChannels();
     sd.pdata = searchPlaylists();
@@ -145,19 +144,25 @@ class _HomePageState extends State<HomePage>
     vidcontroller.addListener(() {
       if (vidcontroller.position.maxScrollExtent == vidcontroller.offset &&
           DupTracker.instance.videoLimitReached == false) {
-        searchVideos();
+        setState(() {
+          searchVideos();
+        });
       }
     });
     chacontroller.addListener(() {
       if (chacontroller.position.maxScrollExtent == chacontroller.offset &&
           DupTracker.instance.channelLimitReached == false) {
-        searchChannels();
+        setState(() {
+          searchChannels();
+        });
       }
     });
     placontroller.addListener(() {
       if (placontroller.position.maxScrollExtent == placontroller.offset &&
           DupTracker.instance.playlistLimitReached == false) {
-        searchPlaylists();
+        setState(() {
+          searchPlaylists();
+        });
       }
     });
   }
@@ -183,7 +188,10 @@ class _HomePageState extends State<HomePage>
           children: <Widget>[
             Container(
                 decoration: BoxDecoration(
-                  border: Border.all(width: 2, color: lightTertiary),
+                  border: Border.all(
+                    width: 2,
+                    color: Theme.of(context).canvasColor,
+                  ),
                   borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Row(
@@ -192,8 +200,8 @@ class _HomePageState extends State<HomePage>
                         child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: TextField(
-                        cursorColor: lightTertiary,
-                        style: const TextStyle(color: lightTertiary),
+                        cursorColor: Theme.of(context).canvasColor,
+                        style: const TextStyle(),
                         controller: editor,
                         focusNode: _node,
                         decoration: InputDecoration(
@@ -335,7 +343,8 @@ class _HomePageState extends State<HomePage>
                                   firstVideo: sd.firstVids[index],
                                 );
                               } else {
-                                if ((DupTracker.instance.playlistLimitReached)) {
+                                if ((DupTracker
+                                    .instance.playlistLimitReached)) {
                                   return const Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Text("Couldn't find more"),

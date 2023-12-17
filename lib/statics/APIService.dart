@@ -75,7 +75,8 @@ class APIService {
     List<Video> videos = [];
 
     try {
-      videos = await client.search(query);
+      videos = await client.search(query, filter: SortFilters.relevance);
+
 
       for (var element in videos) {
         if (DupTracker.instance.fetchedVideoIds.contains(element.id)) {

@@ -14,6 +14,7 @@ ThemeData CustomLightTheme() {
   return ThemeData(
     useMaterial3: true,
     primaryColor: lightPrimary,
+    canvasColor: lightTertiary,
     colorScheme: const ColorScheme(
       brightness: Brightness.light,
       primary: lightSecondary,
@@ -75,29 +76,42 @@ ThemeData CustomDarkTheme() {
   return ThemeData(
     useMaterial3: true,
     primaryColor: darkPrimary,
-    scaffoldBackgroundColor: darkPrimary,
-    cardColor: darkSecondary,
-    dividerColor: darkSecondaryAccent,
     canvasColor: darkTertiary,
+    colorScheme: const ColorScheme(
+      brightness: Brightness.dark,
+      primary: darkSecondaryAccent,
+      onPrimary: darkTertiary,
+      secondary: darkSecondaryAccent,
+      onSecondary: darkSecondary,
+      error: Colors.red,
+      onError: Colors.red,
+      background: darkPrimary,
+      onBackground: darkTertiary,
+      surface: darkSecondaryAccent,
+      onSurface: darkTertiary,
+    ),
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: darkSecondary,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      hintStyle: TextStyle(color: darkSecondary),
+      labelStyle: TextStyle(color: darkSecondary),
+      hoverColor: darkSecondaryAccent,
+    ),
     iconTheme: const IconThemeData(color: darkTertiary),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: darkPrimary,
-      foregroundColor: darkTertiary,
-    ),
-    textButtonTheme: TextButtonThemeData(
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(darkSecondary),
-        foregroundColor: MaterialStateProperty.all(darkTertiary),
-      ),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
+    outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
         textStyle: MaterialStateProperty.all(
-          const TextStyle(fontWeight: FontWeight.bold),
+          const TextStyle(color: darkTertiary, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: MaterialStateProperty.all(darkSecondary),
+        backgroundColor: MaterialStateProperty.all(darkSecondaryAccent),
         foregroundColor: MaterialStateProperty.all(darkTertiary),
       ),
+    ),
+    appBarTheme: const AppBarTheme(
+      elevation: 0,
+      backgroundColor: darkPrimary,
+      foregroundColor: darkTertiary,
     ),
     cardTheme: const CardTheme(
       color: darkPrimary,
@@ -105,8 +119,6 @@ ThemeData CustomDarkTheme() {
       shadowColor: darkTertiary,
     ),
     listTileTheme: const ListTileThemeData(
-      textColor: darkTertiary,
-      iconColor: darkTertiary,
       tileColor: darkSecondary,
     ),
     tabBarTheme: const TabBarTheme(

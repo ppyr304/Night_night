@@ -4,7 +4,6 @@ import 'package:youtube_player/classes/forChannels/channelData.dart';
 import 'package:youtube_player/classes/forChannels/uploadTab.dart';
 
 import 'assets/constants.dart';
-import 'classes/forChannels/channelTab.dart';
 import 'statics/APIService.dart';
 
 class ChannelPage extends StatefulWidget {
