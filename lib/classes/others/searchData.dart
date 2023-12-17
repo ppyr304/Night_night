@@ -9,6 +9,11 @@ class SearchData{
   List<Video> videoList = [];
   List<Channel> channelList = [];
   List<Playlist> playlistList = [];
+
+  var videoSearchList;
+  var channelSearchList;
+  var playlistSearchList;
+
   List<Video> firstVids = [];
 
   void clearList() {

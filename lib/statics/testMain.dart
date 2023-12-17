@@ -1,42 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-import 'package:youtube_player/assets/constants.dart';
-import 'package:youtube_player/classes/forPlaylist/playlistCard.dart';
-import 'package:youtube_player/statics/dupTracker.dart';
-import 'package:youtube_player/statics/testMain.dart';
-import 'classes/forChannels/channelCard.dart';
-import 'classes/forVideos/videoCard.dart';
-import 'classes/others/searchData.dart';
-import 'statics/APIService.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+import '../classes/forChannels/channelCard.dart';
+import '../classes/forPlaylist/playlistCard.dart';
+import '../classes/forVideos/videoCard.dart';
+import '../classes/others/searchData.dart';
+import 'APIService.dart';
+import 'dupTracker.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'youtube player?',
-      theme: CustomLightTheme(),
-      darkTheme: CustomDarkTheme(),
-      home: const TestMain(title: 'Night Night'),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
+class TestMain extends StatefulWidget {
+  const TestMain({super.key, required this.title});
 
   final String title;
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<TestMain> createState() => _TestMainState();
 }
 
-class _HomePageState extends State<HomePage>
+class _TestMainState extends State<TestMain>
     with SingleTickerProviderStateMixin {
   late TabController _mainTabController;
   final vidcontroller = ScrollController();
@@ -58,10 +38,9 @@ class _HomePageState extends State<HomePage>
   //search funcs
   Future<String> searchVideos() async {
     int length = sd.videoList.length;
-    // sd.videoList.addAll(await APIService.instance.getAllVideos(sd.searchQuery));
-    List<Video> videosToAdd =
-        await APIService.instance.getAllVideos(sd.searchQuery);
-    for (var video in videosToAdd) {
+    var videoPool =
+        await APIService.instance.getSearchedVideos(sd.searchQuery, sd);
+    for (var video in videoPool) {
       sd.videoList.add(video);
     }
 
@@ -73,12 +52,10 @@ class _HomePageState extends State<HomePage>
 
   Future<String> searchChannels() async {
     int length = sd.channelList.length;
-    // sd.channelList
-    //     .addAll(await APIService.instance.getAllChannels(sd.searchQuery));
-    List<Channel> channelToAdd =
-        await APIService.instance.getAllChannels(sd.searchQuery);
+    var channelPool =
+        await APIService.instance.getSearchedChannels(sd.searchQuery, sd);
 
-    for (var channel in channelToAdd) {
+    for (var channel in channelPool) {
       sd.channelList.add(channel);
     }
 
@@ -92,8 +69,7 @@ class _HomePageState extends State<HomePage>
     int length = sd.playlistList.length;
     // sd.playlistList
     //     .addAll(await APIService.instance.fetchPlaylist(sd.searchQuery));
-    List<Playlist> playlistToAdd =
-        await APIService.instance.fetchPlaylist(sd.searchQuery);
+    var playlistToAdd = await APIService.instance.fetchPlaylist(sd.searchQuery);
 
     for (var playlist in playlistToAdd) {
       sd.playlistList.add(playlist);
@@ -301,9 +277,9 @@ class _HomePageState extends State<HomePage>
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
                             controller: chacontroller,
-                            itemCount: sd.channelList.length + 1,
+                            itemCount: sd.channelSearchList!.length + 1,
                             itemBuilder: (context, index) {
-                              if (index < sd.channelList.length) {
+                              if (index < sd.channelSearchList!.length) {
                                 return ChannelCard(
                                   item: sd.channelList[index],
                                 );

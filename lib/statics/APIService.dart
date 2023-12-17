@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/classes/forChannels/channelData.dart';
 import 'package:http/http.dart' as http;
+import 'package:youtube_player/classes/others/searchData.dart';
 import 'package:youtube_player/statics/dupTracker.dart';
 
 import 'keys.dart';
@@ -69,6 +70,49 @@ class APIService {
     return channelList;
   }
 
+  Future<List<Video>> getSearchedVideos(String query, SearchData data) async {
+    final ytExplode = YoutubeExplode();
+    List<Video> temp = [];
+
+    try {
+      if (data.videoSearchList == null) {
+        data.videoSearchList =
+            await ytExplode.search.search(query, filter: TypeFilters.video);
+      } else {
+        data.videoSearchList.nextPage();
+      }
+
+      temp.addAll(data.videoSearchList);
+    } finally {
+      ytExplode.close();
+    }
+
+    return temp;
+  }
+
+  Future<List<Channel>> getSearchedChannels(
+      String query, SearchData data) async {
+    final ytExplode = YoutubeExplode();
+    List<Channel> temp = [];
+
+    try {
+      if (data.channelSearchList == null) {
+        data.channelSearchList = await ytExplode.search
+            .searchContent(query, filter: TypeFilters.channel);
+      } else {
+        data.channelSearchList.nextPage();
+      }
+
+      for (var element in data.channelSearchList) {
+        temp.add(element as Channel);
+      }
+    } finally {
+      ytExplode.close();
+    }
+
+    return temp;
+  }
+
   Future<List<Video>> getAllVideos(String query) async {
     final ytExplode = YoutubeExplode();
     final client = ytExplode.search;
@@ -76,7 +120,6 @@ class APIService {
 
     try {
       videos = await client.search(query, filter: SortFilters.relevance);
-
 
       for (var element in videos) {
         if (DupTracker.instance.fetchedVideoIds.contains(element.id)) {
@@ -162,7 +205,6 @@ class APIService {
       for (int x = tracker; x < (tracker + 10) && x < temp.length; x++) {
         uploads.add(await getCompleteData(temp[x]));
       }
-
     } finally {
       yte.close();
     }
