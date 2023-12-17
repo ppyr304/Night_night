@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       title: 'youtube player?',
       theme: CustomLightTheme(),
       darkTheme: CustomDarkTheme(),
-      home: const TestMain(title: 'Night Night'),
+      home: const HomePage(title: 'Night Night'),
     );
   }
 }
@@ -58,10 +58,8 @@ class _HomePageState extends State<HomePage>
   //search funcs
   Future<String> searchVideos() async {
     int length = sd.videoList.length;
-    // sd.videoList.addAll(await APIService.instance.getAllVideos(sd.searchQuery));
-    List<Video> videosToAdd =
-        await APIService.instance.getAllVideos(sd.searchQuery);
-    for (var video in videosToAdd) {
+    var videoPool = await APIService.instance.getSearchedVideos(sd);
+    for (var video in videoPool) {
       sd.videoList.add(video);
     }
 
@@ -73,12 +71,9 @@ class _HomePageState extends State<HomePage>
 
   Future<String> searchChannels() async {
     int length = sd.channelList.length;
-    // sd.channelList
-    //     .addAll(await APIService.instance.getAllChannels(sd.searchQuery));
-    List<Channel> channelToAdd =
-        await APIService.instance.getAllChannels(sd.searchQuery);
+    var channelPool = await APIService.instance.getSearchedChannels(sd);
 
-    for (var channel in channelToAdd) {
+    for (var channel in channelPool) {
       sd.channelList.add(channel);
     }
 
@@ -90,10 +85,7 @@ class _HomePageState extends State<HomePage>
 
   Future<String> searchPlaylists() async {
     int length = sd.playlistList.length;
-    // sd.playlistList
-    //     .addAll(await APIService.instance.fetchPlaylist(sd.searchQuery));
-    List<Playlist> playlistToAdd =
-        await APIService.instance.fetchPlaylist(sd.searchQuery);
+    var playlistToAdd = await APIService.instance.getSearchedPlaylists(sd);
 
     for (var playlist in playlistToAdd) {
       sd.playlistList.add(playlist);
@@ -199,27 +191,27 @@ class _HomePageState extends State<HomePage>
                   children: [
                     Expanded(
                         child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: TextField(
-                        cursorColor: Theme.of(context).canvasColor,
-                        style: const TextStyle(),
-                        controller: editor,
-                        focusNode: _node,
-                        decoration: InputDecoration(
-                          hintText: presets_1[filter],
-                          border: InputBorder.none,
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            sd.searchQuery = value;
-                          });
-                        },
-                        onEditingComplete: () {
-                          search();
-                          setState(() {});
-                        },
-                      ),
-                    )),
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: TextField(
+                            cursorColor: Theme.of(context).canvasColor,
+                            style: const TextStyle(),
+                            controller: editor,
+                            focusNode: _node,
+                            decoration: InputDecoration(
+                              hintText: presets_1[filter],
+                              border: InputBorder.none,
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                sd.searchQuery = value;
+                              });
+                            },
+                            onEditingComplete: () {
+                              search();
+                              setState(() {});
+                            },
+                          ),
+                        )),
                     GestureDetector(
                       child: const Icon(
                         Icons.clear_rounded,

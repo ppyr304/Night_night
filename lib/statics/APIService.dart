@@ -20,56 +20,6 @@ class APIService {
     DupTracker.instance.resetAll();
   }
 
-  Future<List<Channel>> getAllChannels(String query) async {
-    final ytExplode = YoutubeExplode();
-    final client = ytExplode.channels;
-    List<Channel> channelList = [];
-
-    try {
-      final String cURI = "${baseURL}search";
-      final Uri uri = Uri.parse(cURI);
-      final Map<String, String> params = {
-        'part': 'snippet',
-        'type': 'channel',
-        'maxResults': '10',
-        'q': query,
-        'key': youtube_API_key,
-      };
-
-      final Uri finalUri = uri.replace(queryParameters: params);
-
-      final http.Response response = await http.get(finalUri);
-
-      final Map<String, dynamic> data = json.decode(response.body);
-
-      if (data.containsKey('items')) {
-        final List<dynamic> items = data['items'];
-
-        for (var item in items) {
-          final Map<String, dynamic> snippet = item['snippet'];
-          final dynamic channelId = snippet['channelId'];
-
-          Channel temp = await client.get(channelId);
-
-          channelList.add(temp);
-        }
-
-        for (var element in channelList) {
-          if (DupTracker.instance.fetchedChannelIds.contains(element.id)) {
-            channelList.remove(element);
-          } else {
-            DupTracker.instance.fetchedChannelIds.add(element.id);
-          }
-        }
-      }
-    } catch (error) {
-      log('${DateTime.now()} Error: $error');
-    }
-
-    ytExplode.close();
-    return channelList;
-  }
-
   Future<List<Video>> getSearchedVideos(SearchData data) async {
     final ytExplode = YoutubeExplode();
     List<Video> temp = [];
@@ -83,6 +33,8 @@ class APIService {
       }
 
       temp.addAll(data.videoSearchList as Iterable<Video>);
+    } catch (error) {
+      log('${DateTime.now()}, at getSearchedVideos, error:$error');
     } finally {
       ytExplode.close();
     }
@@ -105,6 +57,8 @@ class APIService {
       for (var element in data.channelSearchList!) {
         temp.add(await ytExplode.channels.get(element.id));
       }
+    } catch (error) {
+      log('${DateTime.now()}, at getSearchedChannels, error:$error');
     } finally {
       ytExplode.close();
     }
@@ -127,6 +81,8 @@ class APIService {
       for (var element in data.playlistSearchList!) {
         temp.add(await ytExplode.playlists.get(element.id));
       }
+    } catch (error) {
+      log('${DateTime.now()}, at getSearchedPlaylists, error:$error');
     } finally {
       ytExplode.close();
     }
