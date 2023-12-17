@@ -38,8 +38,7 @@ class _TestMainState extends State<TestMain>
   //search funcs
   Future<String> searchVideos() async {
     int length = sd.videoList.length;
-    var videoPool =
-        await APIService.instance.getSearchedVideos(sd.searchQuery, sd);
+    var videoPool = await APIService.instance.getSearchedVideos(sd);
     for (var video in videoPool) {
       sd.videoList.add(video);
     }
@@ -52,8 +51,7 @@ class _TestMainState extends State<TestMain>
 
   Future<String> searchChannels() async {
     int length = sd.channelList.length;
-    var channelPool =
-        await APIService.instance.getSearchedChannels(sd.searchQuery, sd);
+    var channelPool = await APIService.instance.getSearchedChannels(sd);
 
     for (var channel in channelPool) {
       sd.channelList.add(channel);
@@ -67,9 +65,7 @@ class _TestMainState extends State<TestMain>
 
   Future<String> searchPlaylists() async {
     int length = sd.playlistList.length;
-    // sd.playlistList
-    //     .addAll(await APIService.instance.fetchPlaylist(sd.searchQuery));
-    var playlistToAdd = await APIService.instance.fetchPlaylist(sd.searchQuery);
+    var playlistToAdd = await APIService.instance.getSearchedPlaylists(sd);
 
     for (var playlist in playlistToAdd) {
       sd.playlistList.add(playlist);
@@ -277,9 +273,9 @@ class _TestMainState extends State<TestMain>
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
                             controller: chacontroller,
-                            itemCount: sd.channelSearchList!.length + 1,
+                            itemCount: sd.channelList.length + 1,
                             itemBuilder: (context, index) {
-                              if (index < sd.channelSearchList!.length) {
+                              if (index < sd.channelList.length) {
                                 return ChannelCard(
                                   item: sd.channelList[index],
                                 );

@@ -10,9 +10,9 @@ class SearchData{
   List<Channel> channelList = [];
   List<Playlist> playlistList = [];
 
-  var videoSearchList;
-  var channelSearchList;
-  var playlistSearchList;
+  VideoSearchList? videoSearchList;
+  SearchList? channelSearchList;
+  SearchList? playlistSearchList;
 
   List<Video> firstVids = [];
 
@@ -21,6 +21,10 @@ class SearchData{
     channelList.clear();
     playlistList.clear();
     firstVids.clear();
+
+    videoSearchList?.clear();
+    channelSearchList?.clear();
+    playlistSearchList?.clear();
   }
 
   void dispose () {

@@ -70,19 +70,19 @@ class APIService {
     return channelList;
   }
 
-  Future<List<Video>> getSearchedVideos(String query, SearchData data) async {
+  Future<List<Video>> getSearchedVideos(SearchData data) async {
     final ytExplode = YoutubeExplode();
     List<Video> temp = [];
 
     try {
-      if (data.videoSearchList == null) {
-        data.videoSearchList =
-            await ytExplode.search.search(query, filter: TypeFilters.video);
+      if (data.videoSearchList == null || data.videoSearchList!.isEmpty) {
+        data.videoSearchList = await ytExplode.search
+            .search(data.searchQuery, filter: TypeFilters.video);
       } else {
-        data.videoSearchList.nextPage();
+        await data.videoSearchList?.nextPage();
       }
 
-      temp.addAll(data.videoSearchList);
+      temp.addAll(data.videoSearchList as Iterable<Video>);
     } finally {
       ytExplode.close();
     }
@@ -90,21 +90,42 @@ class APIService {
     return temp;
   }
 
-  Future<List<Channel>> getSearchedChannels(
-      String query, SearchData data) async {
+  Future<List<Channel>> getSearchedChannels(SearchData data) async {
     final ytExplode = YoutubeExplode();
     List<Channel> temp = [];
 
     try {
-      if (data.channelSearchList == null) {
+      if (data.channelSearchList == null || data.channelSearchList!.isEmpty) {
         data.channelSearchList = await ytExplode.search
-            .searchContent(query, filter: TypeFilters.channel);
+            .searchContent(data.searchQuery, filter: TypeFilters.channel);
       } else {
-        data.channelSearchList.nextPage();
+        await data.channelSearchList?.nextPage();
       }
 
-      for (var element in data.channelSearchList) {
-        temp.add(element as Channel);
+      for (var element in data.channelSearchList!) {
+        temp.add(await ytExplode.channels.get(element.id));
+      }
+    } finally {
+      ytExplode.close();
+    }
+
+    return temp;
+  }
+
+  Future<List<Playlist>> getSearchedPlaylists(SearchData data) async {
+    final ytExplode = YoutubeExplode();
+    List<Playlist> temp = [];
+
+    try {
+      if (data.playlistSearchList == null || data.playlistSearchList!.isEmpty) {
+        data.playlistSearchList = await ytExplode.search
+            .searchContent(data.searchQuery, filter: TypeFilters.playlist);
+      } else {
+        await data.playlistSearchList?.nextPage();
+      }
+
+      for (var element in data.playlistSearchList!) {
+        temp.add(await ytExplode.playlists.get(element.id));
       }
     } finally {
       ytExplode.close();
