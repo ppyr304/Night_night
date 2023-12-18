@@ -57,12 +57,14 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
       allVids = widget.playlistVideos!;
     }
 
-    pdata = PlaylistData(
-      playlist: widget.playlist!,
-      item: widget.item!,
-      playlistVideos: allVids,
-      curr: widget.curr!,
-    );
+    if (widget.isPlaylist) {
+      pdata = PlaylistData(
+        playlist: widget.playlist!,
+        item: widget.item!,
+        playlistVideos: allVids,
+        curr: widget.curr!,
+      );
+    }
 
     setState(() {
       ready = true;
@@ -125,7 +127,8 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                         showVideoProgressIndicator: true,
                         onEnded: (ytContext) {
                           if (widget.playlist != null) {
-                            if (widget.curr == pdata.playlistVideos.length-1) {
+                            if (widget.curr ==
+                                pdata.playlistVideos.length - 1) {
                               exit(0);
                             } else {
                               int next = widget.curr! + 1;

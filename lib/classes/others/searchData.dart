@@ -5,16 +5,17 @@ class SearchData{
   Future<String>? vdata;
   Future<String>? cdata;
   Future<String>? pdata;
+
   String searchQuery = "";
+
   List<Video> videoList = [];
   List<Channel> channelList = [];
   List<Playlist> playlistList = [];
+  List<Video> firstVids = [];
 
   VideoSearchList? videoSearchList;
   SearchList? channelSearchList;
   SearchList? playlistSearchList;
-
-  List<Video> firstVids = [];
 
   void clearList() {
     videoList.clear();
@@ -31,10 +32,16 @@ class SearchData{
     vdata = null;
     cdata = null;
     pdata = null;
+
     searchQuery = '';
+
     videoList.clear();
     channelList.clear();
     playlistList.clear();
     firstVids.clear();
+
+    videoSearchList?.clear();
+    channelSearchList?.clear();
+    playlistSearchList?.clear();
   }
 }

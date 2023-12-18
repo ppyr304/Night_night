@@ -15,13 +15,17 @@ class APIService {
 
   final String baseURL = "https://www.googleapis.com/youtube/v3/";
   String _PageToken = '';
+  final ytExplode = YoutubeExplode();
 
   void resetTracker() {
     DupTracker.instance.resetAll();
   }
 
+  void dispose () {
+    ytExplode.close();
+  }
+
   Future<List<Video>> getSearchedVideos(SearchData data) async {
-    final ytExplode = YoutubeExplode();
     List<Video> temp = [];
 
     try {
@@ -32,18 +36,18 @@ class APIService {
         await data.videoSearchList?.nextPage();
       }
 
-      temp.addAll(data.videoSearchList as Iterable<Video>);
+      for (var element in data.videoSearchList!) {
+        temp.add(element);
+      }
     } catch (error) {
       log('${DateTime.now()}, at getSearchedVideos, error:$error');
     } finally {
-      ytExplode.close();
     }
 
     return temp;
   }
 
   Future<List<Channel>> getSearchedChannels(SearchData data) async {
-    final ytExplode = YoutubeExplode();
     List<Channel> temp = [];
 
     try {
@@ -59,15 +63,12 @@ class APIService {
       }
     } catch (error) {
       log('${DateTime.now()}, at getSearchedChannels, error:$error');
-    } finally {
-      ytExplode.close();
     }
 
     return temp;
   }
 
   Future<List<Playlist>> getSearchedPlaylists(SearchData data) async {
-    final ytExplode = YoutubeExplode();
     List<Playlist> temp = [];
 
     try {
@@ -83,15 +84,12 @@ class APIService {
       }
     } catch (error) {
       log('${DateTime.now()}, at getSearchedPlaylists, error:$error');
-    } finally {
-      ytExplode.close();
     }
 
     return temp;
   }
 
   Future<List<Video>> getAllVideos(String query) async {
-    final ytExplode = YoutubeExplode();
     final client = ytExplode.search;
     List<Video> videos = [];
 
@@ -157,40 +155,37 @@ class APIService {
   }
 
   Future<Video> getCompleteData(Video video) async {
-    YoutubeExplode yte = YoutubeExplode();
-    Video actual;
+    late Video actual;
 
     try {
-      actual = await yte.videos.get(video.id);
-    } finally {
-      yte.close();
+      actual = await ytExplode.videos.get(video.id);
+    } catch (error) {
+      log('${DateTime.now()}, at getCompleteData, error:$error');
     }
 
     return actual;
   }
 
   Future<List<Video>> fetchChannelUploads(Channel channel, int tracker) async {
-    YoutubeExplode yte = YoutubeExplode();
     List<Video> temp = [];
     List<Video> uploads = [];
 
     try {
-      await for (var video in yte.channels.getUploads(channel.id)) {
+      await for (var video in ytExplode.channels.getUploads(channel.id)) {
         temp.add(video);
       }
 
       for (int x = tracker; x < (tracker + 10) && x < temp.length; x++) {
         uploads.add(await getCompleteData(temp[x]));
       }
-    } finally {
-      yte.close();
+    } catch (error) {
+      log('${DateTime.now()}, at fetchChannelUploads, error:$error');
     }
 
     return uploads;
   }
 
   Future<List<Video>> fetchVideos(String listId) async {
-    YoutubeExplode ytExplode = YoutubeExplode();
     List<Video> playlist = [];
 
     try {
@@ -226,7 +221,6 @@ class APIService {
       log('${DateTime.now()} Error: $error');
     }
 
-    ytExplode.close();
     return playlist;
   }
 
@@ -240,7 +234,6 @@ class APIService {
   }
 
   Future<List<Playlist>> fetchPlaylist(String query) async {
-    YoutubeExplode ytExplode = YoutubeExplode();
     List<Playlist> allPlaylist = [];
 
     try {
@@ -280,35 +273,29 @@ class APIService {
         }
       }
     } catch (error) {
-      log('${DateTime.now()} Error: $error');
+      log('${DateTime.now()}, at fetchPlaylist, Error: $error');
     }
-
-    ytExplode.close();
 
     return allPlaylist;
   }
 
   Future<Video> getFirstVideo(String query) async {
-    YoutubeExplode yte = YoutubeExplode();
 
-    Video first = await yte.playlists.getVideos(query).first;
+    Video first = await ytExplode.playlists.getVideos(query).first;
 
     return first;
   }
 
   Future<List<Video>> fetchPlaylistVideos(String playlistID) async {
-    YoutubeExplode yte = YoutubeExplode();
     List<Video> videos = [];
 
     try {
-      await yte.playlists.getVideos(playlistID).forEach((element) {
+      await ytExplode.playlists.getVideos(playlistID).forEach((element) {
         videos.add(element);
       });
     } catch (error) {
-      log('${DateTime.now()} Error: $error');
+      log('${DateTime.now()}, at fetchPlaylistVideos, Error: $error');
     }
-
-    yte.close();
     return videos;
   }
 }

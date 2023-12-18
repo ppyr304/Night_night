@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistCard.dart';
 import 'package:youtube_player/statics/dupTracker.dart';
-import 'package:youtube_player/statics/testMain.dart';
 import 'classes/forChannels/channelCard.dart';
 import 'classes/forVideos/videoCard.dart';
 import 'classes/others/searchData.dart';
@@ -39,9 +37,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController _mainTabController;
-  final vidcontroller = ScrollController();
-  final chacontroller = ScrollController();
-  final placontroller = ScrollController();
+
+  final vidController = ScrollController();
+  final chaController = ScrollController();
+  final plaController = ScrollController();
 
   SearchData sd = SearchData();
 
@@ -134,30 +133,36 @@ class _HomePageState extends State<HomePage>
     super.initState();
     _mainTabController = TabController(length: 3, vsync: this);
 
-    vidcontroller.addListener(() {
-      if (vidcontroller.position.maxScrollExtent == vidcontroller.offset &&
+    vidController.addListener(() {
+      if (vidController.position.maxScrollExtent == vidController.offset &&
           DupTracker.instance.videoLimitReached == false) {
         setState(() {
           searchVideos();
         });
       }
     });
-    chacontroller.addListener(() {
-      if (chacontroller.position.maxScrollExtent == chacontroller.offset &&
+    chaController.addListener(() {
+      if (chaController.position.maxScrollExtent == chaController.offset &&
           DupTracker.instance.channelLimitReached == false) {
         setState(() {
           searchChannels();
         });
       }
     });
-    placontroller.addListener(() {
-      if (placontroller.position.maxScrollExtent == placontroller.offset &&
+    plaController.addListener(() {
+      if (plaController.position.maxScrollExtent == plaController.offset &&
           DupTracker.instance.playlistLimitReached == false) {
         setState(() {
           searchPlaylists();
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    APIService.instance.dispose();
   }
 
   @override
@@ -257,7 +262,7 @@ class _HomePageState extends State<HomePage>
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
-                            controller: vidcontroller,
+                            controller: vidController,
                             itemCount: sd.videoList.length + 1,
                             itemBuilder: (context, index) {
                               if (index < sd.videoList.length) {
@@ -292,7 +297,7 @@ class _HomePageState extends State<HomePage>
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
-                            controller: chacontroller,
+                            controller: chaController,
                             itemCount: sd.channelList.length + 1,
                             itemBuilder: (context, index) {
                               if (index < sd.channelList.length) {
@@ -327,7 +332,7 @@ class _HomePageState extends State<HomePage>
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           return ListView.builder(
-                            controller: placontroller,
+                            controller: plaController,
                             itemCount: sd.playlistList.length + 1,
                             itemBuilder: (context, index) {
                               if (index < sd.playlistList.length) {
