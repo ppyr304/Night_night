@@ -21,7 +21,7 @@ class APIService {
     DupTracker.instance.resetAll();
   }
 
-  void dispose () {
+  void dispose() {
     ytExplode.close();
   }
 
@@ -29,19 +29,19 @@ class APIService {
     List<Video> temp = [];
 
     try {
-      if (data.videoSearchList == null || data.videoSearchList!.isEmpty) {
+      if (data.videoList.isEmpty) {
         data.videoSearchList = await ytExplode.search
             .search(data.searchQuery, filter: TypeFilters.video);
       } else {
-        await data.videoSearchList?.nextPage();
+        data.videoSearchList = await data.videoSearchList?.nextPage();
       }
 
       for (var element in data.videoSearchList!) {
+        print('---${element.title}');
         temp.add(element);
       }
     } catch (error) {
       log('${DateTime.now()}, at getSearchedVideos, error:$error');
-    } finally {
     }
 
     return temp;
@@ -51,11 +51,11 @@ class APIService {
     List<Channel> temp = [];
 
     try {
-      if (data.channelSearchList == null || data.channelSearchList!.isEmpty) {
+      if (data.channelList.isEmpty) {
         data.channelSearchList = await ytExplode.search
             .searchContent(data.searchQuery, filter: TypeFilters.channel);
       } else {
-        await data.channelSearchList?.nextPage();
+        data.channelSearchList = await data.channelSearchList?.nextPage();
       }
 
       for (var element in data.channelSearchList!) {
@@ -72,11 +72,11 @@ class APIService {
     List<Playlist> temp = [];
 
     try {
-      if (data.playlistSearchList == null || data.playlistSearchList!.isEmpty) {
+      if (data.playlistList.isEmpty) {
         data.playlistSearchList = await ytExplode.search
             .searchContent(data.searchQuery, filter: TypeFilters.playlist);
       } else {
-        await data.playlistSearchList?.nextPage();
+        data.playlistSearchList = await data.playlistSearchList?.nextPage();
       }
 
       for (var element in data.playlistSearchList!) {
@@ -280,7 +280,6 @@ class APIService {
   }
 
   Future<Video> getFirstVideo(String query) async {
-
     Video first = await ytExplode.playlists.getVideos(query).first;
 
     return first;
