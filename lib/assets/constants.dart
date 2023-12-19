@@ -193,3 +193,25 @@ String formatDuration(Duration? inDuration) {
     return '${minutes < 10 ? '0$minutes' : '$minutes'}:${seconds < 10 ? '0$seconds' : '$seconds'}';
   }
 }
+
+class EndOfList extends StatelessWidget {
+  const EndOfList({super.key, required this.condition});
+  final bool condition;
+
+  @override
+  Widget build(BuildContext context) {
+    if (condition) {
+      return const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text("Couldn't find more"),
+      );
+    } else {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+  }
+}

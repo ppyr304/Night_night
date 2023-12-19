@@ -17,7 +17,11 @@ class SearchData{
   SearchList? channelSearchList;
   SearchList? playlistSearchList;
 
-  void clearList() {
+  bool videoLimitReached = false;
+  bool channelLimitReached = false;
+  bool playlistLimitReached = false;
+
+  void resetList() {
     videoList.clear();
     channelList.clear();
     playlistList.clear();
@@ -26,6 +30,10 @@ class SearchData{
     videoSearchList?.clear();
     channelSearchList?.clear();
     playlistSearchList?.clear();
+
+    resetLimitV();
+    resetLimitC();
+    resetLimitP();
   }
 
   void dispose () {
@@ -43,5 +51,30 @@ class SearchData{
     videoSearchList?.clear();
     channelSearchList?.clear();
     playlistSearchList?.clear();
+
+    resetLimitV();
+    resetLimitC();
+    resetLimitP();
+  }
+
+
+  void reachedVideoLimit () {
+    videoLimitReached = true;
+  }
+  void reachedChannelLimit () {
+    channelLimitReached = true;
+  }
+  void reachedPlaylistLimit () {
+    playlistLimitReached = true;
+  }
+
+  void resetLimitV () {
+    videoLimitReached = false;
+  }
+  void resetLimitC () {
+    channelLimitReached = false;
+  }
+  void resetLimitP () {
+    playlistLimitReached = false;
   }
 }

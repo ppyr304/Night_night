@@ -4,22 +4,16 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/classes/forChannels/channelData.dart';
 import 'package:http/http.dart' as http;
 import 'package:youtube_player/classes/others/searchData.dart';
-import 'package:youtube_player/statics/dupTracker.dart';
 
 import 'keys.dart';
 
 class APIService {
   APIService._instantiate();
-
   static final APIService instance = APIService._instantiate();
 
   final String baseURL = "https://www.googleapis.com/youtube/v3/";
   String _PageToken = '';
   final ytExplode = YoutubeExplode();
-
-  void resetTracker() {
-    DupTracker.instance.resetAll();
-  }
 
   void dispose() {
     ytExplode.close();
@@ -37,8 +31,10 @@ class APIService {
       }
 
       for (var element in data.videoSearchList!) {
-        print('---${element.title}');
         temp.add(element);
+      }
+      if (temp.isEmpty) {
+        data.reachedVideoLimit;
       }
     } catch (error) {
       log('${DateTime.now()}, at getSearchedVideos, error:$error');
@@ -61,6 +57,9 @@ class APIService {
       for (var element in data.channelSearchList!) {
         temp.add(await ytExplode.channels.get(element.id));
       }
+      if (temp.isEmpty) {
+        data.channelLimitReached;
+      }
     } catch (error) {
       log('${DateTime.now()}, at getSearchedChannels, error:$error');
     }
@@ -82,6 +81,9 @@ class APIService {
       for (var element in data.playlistSearchList!) {
         temp.add(await ytExplode.playlists.get(element.id));
       }
+      if (temp.isEmpty) {
+        data.reachedPlaylistLimit;
+      }
     } catch (error) {
       log('${DateTime.now()}, at getSearchedPlaylists, error:$error');
     }
@@ -95,19 +97,10 @@ class APIService {
 
     try {
       videos = await client.search(query, filter: SortFilters.relevance);
-
-      for (var element in videos) {
-        if (DupTracker.instance.fetchedVideoIds.contains(element.id)) {
-          videos.remove(element);
-        } else {
-          DupTracker.instance.fetchedVideoIds.add(element.id);
-        }
-      }
     } catch (error) {
       log('${DateTime.now()} Error: $error');
     }
 
-    ytExplode.close();
     return videos;
   }
 
@@ -166,12 +159,31 @@ class APIService {
     return actual;
   }
 
+  Future<void> fetchChannelUpload(ChannelData data) async {
+    List<Video> temp = [];
+    try {
+      await for (var video in ytExplode.channels
+          .getUploads(data.channel?.id)
+          .skip(data.uploads.length)
+          .take(10)) {
+        temp.add(video);
+      }
+    } catch (error) {
+      log('${DateTime.now()}, at fetchChannelUploads, error:$error');
+    }
+
+    for (var vid in temp) {
+      data.uploads.add(await getCompleteData(vid));
+    }
+  }
+
   Future<List<Video>> fetchChannelUploads(Channel channel, int tracker) async {
     List<Video> temp = [];
     List<Video> uploads = [];
 
     try {
-      await for (var video in ytExplode.channels.getUploads(channel.id)) {
+      await for (var video
+          in ytExplode.channels.getUploads(channel.id).take(10)) {
         temp.add(video);
       }
 
@@ -262,14 +274,6 @@ class APIService {
 
           Playlist playlist = await ytExplode.playlists.get(id);
           allPlaylist.add(playlist);
-        }
-      }
-
-      for (var element in allPlaylist) {
-        if (DupTracker.instance.fetchedPlaylistIds.contains(element.id)) {
-          allPlaylist.remove(element);
-        } else {
-          DupTracker.instance.fetchedPlaylistIds.add(element.id);
         }
       }
     } catch (error) {

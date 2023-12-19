@@ -19,24 +19,31 @@ class _HomePageState extends State<ChannelPage>
   late TabController _tabController;
   final controller = ScrollController();
 
+  Future<String>? data;
   late ChannelData channelData;
-  List<Video> uploads = [];
   int tracker = 0;
   bool reachedEnd = false;
 
   Future<void> _getChannelData() async {
     channelData = await APIService.instance.fetchChannelData(widget.item);
+
+    if (channelData.uploads.isEmpty) {
+      _getUploadsData();
+    }
+
+    data = Future.value("done");
   }
 
   Future<void> _getUploadsData() async {
-    int temp = uploads.length;
-    uploads.addAll(
-        await APIService.instance.fetchChannelUploads(widget.item, tracker));
-    tracker = uploads.length;
-    if (temp == tracker) {
-      reachedEnd = true;
-    }
-    setState(() {});
+    int temp = channelData.uploads.length;
+    await APIService.instance.fetchChannelUpload(channelData);
+    tracker = channelData.uploads.length;
+
+    setState(() {
+      if (temp == tracker) {
+        reachedEnd = true;
+      }
+    });
   }
 
   @override
@@ -44,12 +51,10 @@ class _HomePageState extends State<ChannelPage>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _getChannelData();
-    _getUploadsData();
 
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
         _getUploadsData();
-        print('fetching more');
       }
     });
   }
@@ -61,9 +66,9 @@ class _HomePageState extends State<ChannelPage>
 
     _tabController.dispose();
     controller.dispose();
-    uploads = [];
     tracker = 0;
     reachedEnd = false;
+    channelData.dispose();
   }
 
   @override
@@ -71,7 +76,7 @@ class _HomePageState extends State<ChannelPage>
     return Scaffold(
       appBar: AppBar(),
       body: FutureBuilder(
-        future: _getChannelData(),
+        future: data,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return Column(
@@ -125,7 +130,7 @@ class _HomePageState extends State<ChannelPage>
                             controller: _tabController,
                             children: [
                               UploadTab(
-                                uploads: uploads,
+                                uploads: channelData.uploads,
                                 controller: controller,
                                 reachedEnd: reachedEnd,
                               ),

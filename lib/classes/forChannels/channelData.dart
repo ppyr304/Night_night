@@ -7,6 +7,16 @@ class ChannelData {
   List<int> videoCounts = [];
   List<String> playlistIds = [];
   Playlists playlists = Playlists();
+  List<Video> uploads = [];
 
   ChannelData({required this.channel});
+
+  void dispose() {
+    channel = null;
+    totalVideoCount = 0;
+    videoCounts.clear();
+    playlistIds.clear();
+    playlists = Playlists();
+    uploads.clear();
+  }
 }

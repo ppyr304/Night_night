@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistCard.dart';
-import 'package:youtube_player/statics/dupTracker.dart';
 import 'classes/forChannels/channelCard.dart';
 import 'classes/forVideos/videoCard.dart';
 import 'classes/others/searchData.dart';
@@ -56,46 +55,30 @@ class _HomePageState extends State<HomePage>
 
   //search funcs
   Future<String> searchVideos() async {
-    int length = sd.videoList.length;
     var videoPool = await APIService.instance.getSearchedVideos(sd);
     for (var video in videoPool) {
       sd.videoList.add(video);
-    }
-
-    if (length == sd.videoList.length) {
-      DupTracker.instance.videoLimitReached;
     }
     return "video search finished";
   }
 
   Future<String> searchChannels() async {
-    int length = sd.channelList.length;
     var channelPool = await APIService.instance.getSearchedChannels(sd);
 
     for (var channel in channelPool) {
       sd.channelList.add(channel);
     }
-
-    if (length == sd.channelList.length) {
-      DupTracker.instance.channelLimitReached;
-    }
     return "channel search finished";
   }
 
   Future<String> searchPlaylists() async {
-    int length = sd.playlistList.length;
     var playlistToAdd = await APIService.instance.getSearchedPlaylists(sd);
 
     for (var playlist in playlistToAdd) {
       sd.playlistList.add(playlist);
     }
 
-    if (length == sd.playlistList.length) {
-      DupTracker.instance.playlistLimitReached;
-      return 'limit reached';
-    } else {
-      return await getPlaylistPic();
-    }
+    return await getPlaylistPic();
   }
 
   Future<String> getPlaylistPic() async {
@@ -114,9 +97,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> search() async {
     _node.unfocus();
-    sd.clearList();
-    APIService.instance.resetTracker();
-
+    sd.resetList();
     await initSearch();
   }
 
@@ -135,7 +116,7 @@ class _HomePageState extends State<HomePage>
 
     vidController.addListener(() {
       if (vidController.position.maxScrollExtent == vidController.offset &&
-          DupTracker.instance.videoLimitReached == false) {
+          sd.videoLimitReached == false) {
         setState(() {
           searchVideos();
         });
@@ -143,7 +124,7 @@ class _HomePageState extends State<HomePage>
     });
     chaController.addListener(() {
       if (chaController.position.maxScrollExtent == chaController.offset &&
-          DupTracker.instance.channelLimitReached == false) {
+          sd.channelLimitReached == false) {
         setState(() {
           searchChannels();
         });
@@ -151,7 +132,7 @@ class _HomePageState extends State<HomePage>
     });
     plaController.addListener(() {
       if (plaController.position.maxScrollExtent == plaController.offset &&
-          DupTracker.instance.playlistLimitReached == false) {
+          sd.playlistLimitReached == false) {
         setState(() {
           searchPlaylists();
         });
@@ -196,27 +177,27 @@ class _HomePageState extends State<HomePage>
                   children: [
                     Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: TextField(
-                            cursorColor: Theme.of(context).canvasColor,
-                            style: const TextStyle(),
-                            controller: editor,
-                            focusNode: _node,
-                            decoration: InputDecoration(
-                              hintText: presets_1[filter],
-                              border: InputBorder.none,
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                sd.searchQuery = value;
-                              });
-                            },
-                            onEditingComplete: () {
-                              search();
-                              setState(() {});
-                            },
-                          ),
-                        )),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: TextField(
+                        cursorColor: Theme.of(context).canvasColor,
+                        style: const TextStyle(),
+                        controller: editor,
+                        focusNode: _node,
+                        decoration: InputDecoration(
+                          hintText: presets_1[filter],
+                          border: InputBorder.none,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            sd.searchQuery = value;
+                          });
+                        },
+                        onEditingComplete: () {
+                          search();
+                          setState(() {});
+                        },
+                      ),
+                    )),
                     GestureDetector(
                       child: const Icon(
                         Icons.clear_rounded,
@@ -270,16 +251,8 @@ class _HomePageState extends State<HomePage>
                                   item: sd.videoList[index],
                                 );
                               } else {
-                                if ((DupTracker.instance.videoLimitReached)) {
-                                  return const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text("Couldn't find more"),
-                                  );
-                                } else {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
+                                return EndOfList(
+                                    condition: sd.videoLimitReached);
                               }
                             },
                           );
@@ -305,16 +278,8 @@ class _HomePageState extends State<HomePage>
                                   item: sd.channelList[index],
                                 );
                               } else {
-                                if ((DupTracker.instance.channelLimitReached)) {
-                                  return const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text("Couldn't find more"),
-                                  );
-                                } else {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
+                                return EndOfList(
+                                    condition: sd.channelLimitReached);
                               }
                             },
                           );
@@ -341,17 +306,8 @@ class _HomePageState extends State<HomePage>
                                   firstVideo: sd.firstVids[index],
                                 );
                               } else {
-                                if ((DupTracker
-                                    .instance.playlistLimitReached)) {
-                                  return const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text("Couldn't find more"),
-                                  );
-                                } else {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
+                                return EndOfList(
+                                    condition: sd.playlistLimitReached);
                               }
                             },
                           );
