@@ -5,6 +5,7 @@ import 'package:youtube_player/classes/forChannels/channelData.dart';
 import 'package:http/http.dart' as http;
 import 'package:youtube_player/classes/others/searchData.dart';
 
+import '../classes/others/ovlData.dart';
 import 'keys.dart';
 
 class APIService {
@@ -12,7 +13,7 @@ class APIService {
   static final APIService instance = APIService._instantiate();
 
   final String baseURL = "https://www.googleapis.com/youtube/v3/";
-  String _PageToken = '';
+  final String _PageToken = '';
   final ytExplode = YoutubeExplode();
 
   void dispose() {
@@ -91,19 +92,6 @@ class APIService {
     return temp;
   }
 
-  Future<List<Video>> getAllVideos(String query) async {
-    final client = ytExplode.search;
-    List<Video> videos = [];
-
-    try {
-      videos = await client.search(query, filter: SortFilters.relevance);
-    } catch (error) {
-      log('${DateTime.now()} Error: $error');
-    }
-
-    return videos;
-  }
-
   Future<ChannelData> fetchChannelData(Channel channel) async {
     ChannelData channelData = ChannelData(channel: channel);
     String id = channel.id.toString();
@@ -130,6 +118,7 @@ class APIService {
           Map<String, dynamic> contentDetails = item['contentDetails'];
           Map<String, dynamic> snippet = item['snippet'];
           String channelId = item['id'];
+          String description = snippet['description'];
           String PlaylistsId = contentDetails['relatedPlaylists']['uploads'];
           String totalVideoCount = item['statistics']['videoCount'];
 
@@ -138,6 +127,7 @@ class APIService {
           // channelData.playlists.addPlaylist(temp);
           // channelData.videoCounts.add(temp.length);
           channelData.totalVideoCount = int.parse(totalVideoCount);
+          channelData.description = description;
         }
       }
     } catch (error) {
@@ -159,13 +149,13 @@ class APIService {
     return actual;
   }
 
-  Future<void> fetchChannelUpload(ChannelData data) async {
+  Future<void> fetchChannelUploads(ChannelData data) async {
     List<Video> temp = [];
     try {
       await for (var video in ytExplode.channels
           .getUploads(data.channel?.id)
           .skip(data.uploads.length)
-          .take(10)) {
+          .take(5)) {
         temp.add(video);
       }
     } catch (error) {
@@ -177,110 +167,33 @@ class APIService {
     }
   }
 
-  Future<List<Video>> fetchChannelUploads(Channel channel, int tracker) async {
-    List<Video> temp = [];
-    List<Video> uploads = [];
+  Future<void> getVideos(String query, OVLData ovlData) async {
+    final client = ytExplode.search;
 
     try {
-      await for (var video
-          in ytExplode.channels.getUploads(channel.id).take(10)) {
-        temp.add(video);
-      }
-
-      for (int x = tracker; x < (tracker + 10) && x < temp.length; x++) {
-        uploads.add(await getCompleteData(temp[x]));
-      }
-    } catch (error) {
-      log('${DateTime.now()}, at fetchChannelUploads, error:$error');
-    }
-
-    return uploads;
-  }
-
-  Future<List<Video>> fetchVideos(String listId) async {
-    List<Video> playlist = [];
-
-    try {
-      Map<String, String> params = {
-        'part': 'snippet',
-        'playlistId': listId,
-        'maxResults': '10',
-        'pageToken': _PageToken,
-        'key': youtube_API_key,
-      };
-
-      final String pURL = "${baseURL}playlistItems";
-      final Uri uri = Uri.parse(pURL);
-
-      final Uri finalUri = uri.replace(queryParameters: params);
-      final http.Response response = await http.get(finalUri);
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-
-        _PageToken = data['nextPageToken'] ?? '';
-
-        List<dynamic> vidsJson = data['items'];
-
-        for (var vid in vidsJson) {
-          String vidId = vid['snippet']['resourceId']['videoId'];
-          Video video = await ytExplode.videos.get(vidId);
-
-          playlist.add(video);
+      if (ovlData.videos.isEmpty) {
+        ovlData.vsl = await client.search(query, filter: SortFilters.relevance);
+        for (var video in ovlData.vsl!) {
+          ovlData.videos.add(video);
+        }
+        ovlData.videos.removeAt(0);
+      } else {
+        ovlData.vsl = await ovlData.vsl?.nextPage();
+        for (var video in ovlData.vsl!) {
+          ovlData.videos.add(video);
         }
       }
     } catch (error) {
-      log('${DateTime.now()} Error: $error');
+      log('${DateTime.now()}, at getVideos, Error: $error');
     }
-
-    return playlist;
   }
 
-  Future<List<Video>> fetchOtherVids(String query) async {
-    List<Video> videos = [];
-
-    videos = await getAllVideos(query);
-    videos.removeAt(0);
-
-    return videos;
-  }
-
-  Future<List<Playlist>> fetchPlaylist(String query) async {
-    List<Playlist> allPlaylist = [];
-
+  Future<void> fetchOtherVids(String query, OVLData ovlData) async {
     try {
-      final String cURI = "${baseURL}search";
-      final Uri uri = Uri.parse(cURI);
-      final Map<String, String> params = {
-        'part': 'snippet',
-        'type': 'playlist',
-        'maxResults': '10',
-        'q': query,
-        'key': youtube_API_key,
-      };
-
-      final Uri finalUri = uri.replace(queryParameters: params);
-
-      final http.Response response = await http.get(finalUri);
-
-      final Map<String, dynamic> data = json.decode(response.body);
-
-      if (data.containsKey('items')) {
-        final List<dynamic> items = data['items'];
-
-        for (var item in items) {
-          final Map<String, dynamic> snippet = item['snippet'];
-          dynamic id = item['id']['playlistId'];
-
-          Playlist playlist = await ytExplode.playlists.get(id);
-          allPlaylist.add(playlist);
-        }
-      }
+      await getVideos(query, ovlData);
     } catch (error) {
-      log('${DateTime.now()}, at fetchPlaylist, Error: $error');
+      log('${DateTime.now()}, at fetchOtherVids, Error: $error');
     }
-
-    return allPlaylist;
   }
 
   Future<Video> getFirstVideo(String query) async {

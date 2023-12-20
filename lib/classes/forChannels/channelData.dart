@@ -3,6 +3,7 @@ import 'package:youtube_player/assets/Playlists.dart';
 
 class ChannelData {
   Channel? channel;
+  String description = '';
   int totalVideoCount = 0;
   List<int> videoCounts = [];
   List<String> playlistIds = [];

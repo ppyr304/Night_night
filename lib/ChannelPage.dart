@@ -21,7 +21,6 @@ class _HomePageState extends State<ChannelPage>
 
   Future<String>? data;
   late ChannelData channelData;
-  int tracker = 0;
   bool reachedEnd = false;
 
   Future<void> _getChannelData() async {
@@ -35,15 +34,14 @@ class _HomePageState extends State<ChannelPage>
   }
 
   Future<void> _getUploadsData() async {
-    int temp = channelData.uploads.length;
-    await APIService.instance.fetchChannelUpload(channelData);
-    tracker = channelData.uploads.length;
+    int before = channelData.uploads.length;
+    await APIService.instance.fetchChannelUploads(channelData);
+    int after = channelData.uploads.length;
 
-    setState(() {
-      if (temp == tracker) {
-        reachedEnd = true;
-      }
-    });
+    if (before == after) {
+      reachedEnd = true;
+    }
+    setState(() {});
   }
 
   @override
@@ -66,7 +64,6 @@ class _HomePageState extends State<ChannelPage>
 
     _tabController.dispose();
     controller.dispose();
-    tracker = 0;
     reachedEnd = false;
     channelData.dispose();
   }
@@ -119,8 +116,8 @@ class _HomePageState extends State<ChannelPage>
                         controller: _tabController,
                         tabs: const [
                           Tab(text: 'uploads'),
-                          Tab(text: 'something'),
-                          Tab(text: 'else'),
+                          Tab(text: 'playlists'),
+                          Tab(text: 'description'),
                         ],
                       ),
                       Expanded(
@@ -134,8 +131,10 @@ class _HomePageState extends State<ChannelPage>
                                 controller: controller,
                                 reachedEnd: reachedEnd,
                               ),
-                              const Center(child: Text('still under')),
-                              const Center(child: Text('construction')),
+                              const Center(
+                                  child: Text('still under construction')),
+                              ListView(
+                                  children: [Text(channelData.description)]),
                             ],
                           ),
                         ),

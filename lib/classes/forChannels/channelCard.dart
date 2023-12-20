@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-import 'package:youtube_player/classes/forChannels/channelData.dart';
 
 import '../../ChannelPage.dart';
 import '../../assets/constants.dart';
-import '../../statics/APIService.dart';
 
 class ChannelCard extends StatelessWidget {
   final Channel item;

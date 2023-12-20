@@ -51,10 +51,13 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
   void initState() {
     super.initState();
     ytController = getController();
-    if (widget.playlistVideos == null) {
-      fetchPlaylistVideo();
-    } else {
-      allVids = widget.playlistVideos!;
+
+    if (widget.isPlaylist) {
+      if (widget.playlistVideos == null) {
+        fetchPlaylistVideo();
+      } else {
+        allVids = widget.playlistVideos!;
+      }
     }
 
     if (widget.isPlaylist) {
