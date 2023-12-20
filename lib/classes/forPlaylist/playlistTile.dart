@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistData.dart';
 
-import '../../VidPlayerPage.dart';
+import '../../pages/VidPlayerPage.dart';
 
 class PlaylistTile extends StatelessWidget {
   const PlaylistTile(
@@ -27,7 +27,7 @@ class PlaylistTile extends StatelessWidget {
         Expanded(
           child: ListTile(
             leading:
-                Image.network(data.playlistVideos[index].thumbnails.maxResUrl),
+                Image.network(data.playlistVideos[index].thumbnails.highResUrl),
             title: Text(data.playlistVideos[index].title),
             subtitle: Text(
               data.playlistVideos[index].author,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-import '../../VidPlayerPage.dart';
+import '../../pages/VidPlayerPage.dart';
 
 class PlaylistCard extends StatefulWidget {
   final Video firstVideo;

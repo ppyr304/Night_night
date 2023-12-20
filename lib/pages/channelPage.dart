@@ -3,8 +3,8 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/classes/forChannels/channelData.dart';
 import 'package:youtube_player/classes/forChannels/uploadTab.dart';
 
-import 'assets/constants.dart';
-import 'statics/APIService.dart';
+import '../assets/constants.dart';
+import '../statics/APIService.dart';
 
 class ChannelPage extends StatefulWidget {
   final Channel item;

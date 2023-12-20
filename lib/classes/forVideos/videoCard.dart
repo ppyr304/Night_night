@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-import 'package:youtube_player/VidPlayerPage.dart';
+import 'package:youtube_player/pages/VidPlayerPage.dart';
 import 'package:youtube_player/assets/constants.dart';
 
 class VideoCard extends StatelessWidget {

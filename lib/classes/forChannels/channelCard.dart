@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-import '../../ChannelPage.dart';
+import '../../pages/channelPage.dart';
 import '../../assets/constants.dart';
 
 class ChannelCard extends StatelessWidget {

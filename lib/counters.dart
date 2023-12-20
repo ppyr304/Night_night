@@ -1,18 +1,19 @@
 class Counters{
   int limit = 1;
-  int curr = 0;
+  int num = 0;
+  DateTime dateTime = DateTime.now();
 
   Counters._instantiate();
 
   static final Counters instance = Counters._instantiate();
 
-  Counters(this.limit, this.curr);
+  Counters(this.limit);
 
   void increment () {
-    curr++;
+    num++;
   }
 
   bool atLimit () {
-    return (limit == curr);
+    return (limit == num);
   }
 }

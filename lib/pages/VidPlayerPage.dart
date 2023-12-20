@@ -9,7 +9,7 @@ import 'package:youtube_player/classes/others/otherVideoList.dart';
 import 'package:youtube_player/statics/APIService.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import 'classes/forPlaylist/botSheetList.dart';
+import '../classes/forPlaylist/botSheetList.dart';
 
 class VidPlayerPage extends StatefulWidget {
   const VidPlayerPage(
@@ -91,6 +91,16 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
   Widget build(BuildContext context) {
     double ratio = 16 / 9;
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.popUntil(context, (route) => route.isFirst);
+            },
+            icon: const Icon(Icons.home_rounded),
+          ),
+        ],
+      ),
       body: (ready)
           ? FutureBuilder(
               future: ytController,

@@ -69,6 +69,10 @@ ThemeData CustomLightTheme() {
         fontSize: 17,
       ),
     ),
+    floatingActionButtonTheme:
+        FloatingActionButtonThemeData(backgroundColor: lightSecondaryAccent,
+        ),
+
   );
 }
 
