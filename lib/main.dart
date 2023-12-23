@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistCard.dart';
+import 'package:youtube_player/pages/settingsPage.dart';
 import 'classes/forChannels/channelCard.dart';
 import 'classes/forVideos/videoCard.dart';
 import 'classes/others/searchData.dart';
@@ -153,7 +154,10 @@ class _HomePageState extends State<HomePage>
         title: Text(widget.title),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()));
+            },
             icon: const Icon(Icons.settings),
             tooltip: "settings",
           )

@@ -1,19 +1,20 @@
 class Counters{
-  int limit = 1;
+  //limit
+  int maxVideos = 1;
+  Duration maxDuration = const Duration(minutes: 30);
+  //current
   int num = 0;
-  DateTime dateTime = DateTime.now();
+  //by videos or duration
+  bool byVideos = true;
 
   Counters._instantiate();
-
   static final Counters instance = Counters._instantiate();
-
-  Counters(this.limit);
 
   void increment () {
     num++;
   }
 
   bool atLimit () {
-    return (limit == num);
+    return (maxVideos == num);
   }
 }

@@ -48,6 +48,15 @@ ThemeData CustomLightTheme() {
         foregroundColor: MaterialStateProperty.all(lightTertiary),
       ),
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        textStyle: MaterialStateProperty.all(
+          const TextStyle(color: lightTertiary, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: MaterialStateProperty.all(lightSecondary),
+        foregroundColor: MaterialStateProperty.all(lightTertiary),
+      ),
+    ),
     appBarTheme: const AppBarTheme(
       elevation: 0,
       backgroundColor: lightPrimary,
@@ -69,10 +78,9 @@ ThemeData CustomLightTheme() {
         fontSize: 17,
       ),
     ),
-    floatingActionButtonTheme:
-        FloatingActionButtonThemeData(backgroundColor: lightSecondaryAccent,
-        ),
-
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: lightSecondaryAccent,
+    ),
   );
 }
 
