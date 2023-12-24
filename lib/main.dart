@@ -186,7 +186,7 @@ class _HomePageState extends State<HomePage>
                       builder: (context) => const SettingsPage()));
             },
             icon: const Icon(Icons.settings),
-            tooltip: temp,
+            tooltip: 'settings',
           )
         ],
       ),
