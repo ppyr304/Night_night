@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistData.dart';
 
-import '../../pages/VidPlayerPage.dart';
+import '../../pages/vidPlayerPage.dart';
 
 class PlaylistTile extends StatelessWidget {
   const PlaylistTile(

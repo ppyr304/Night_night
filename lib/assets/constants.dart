@@ -78,7 +78,7 @@ ThemeData CustomLightTheme() {
         fontSize: 17,
       ),
     ),
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: lightSecondaryAccent,
     ),
   );

@@ -1,6 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistCard.dart';
+import 'package:youtube_player/classes/others/storage.dart';
 import 'package:youtube_player/pages/settingsPage.dart';
 import 'classes/forChannels/channelCard.dart';
 import 'classes/forVideos/videoCard.dart';
@@ -109,9 +113,30 @@ class _HomePageState extends State<HomePage>
     });
   }
 
+  Future<String> loadFile() async {
+    String response = '';
+    try {
+      // response = await rootBundle.loadString('lib/saves/counterSaves.txt');
+      File file = File('counterSaves.txt');
+      print(file.absolute);
+      response = await file.readAsString();
+    } catch (error) {
+      log('${DateTime.now()}, at LoadFile, $error');
+    }
+
+    return response;
+  }
+
+  Future<void> fileLoader() async {
+    await Storage.writeToFile('MaxVideos 1\n'
+        'MaxDuration 0h 30m 0s');
+
+    await Future.value(Storage.readFromFile());
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
+    fileLoader();
     super.initState();
     _mainTabController = TabController(length: 3, vsync: this);
 
@@ -155,11 +180,13 @@ class _HomePageState extends State<HomePage>
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsPage()));
             },
             icon: const Icon(Icons.settings),
-            tooltip: "settings",
+            tooltip: temp,
           )
         ],
       ),
