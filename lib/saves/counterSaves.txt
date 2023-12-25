@@ -1,2 +1,0 @@
-MaxVideos 1
-MaxDuration 0h 30m 0s

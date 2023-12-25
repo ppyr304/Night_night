@@ -128,9 +128,6 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> fileLoader() async {
-    await Storage.writeToFile('MaxVideos 1\n'
-        'MaxDuration 0h 30m 0s');
-
     await Future.value(Storage.readFromFile());
   }
 
