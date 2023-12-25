@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const Color lightPrimary = Color.fromRGBO(245, 239, 231, 1);
 const Color lightSecondary = Color.fromRGBO(216, 196, 182, 1);
@@ -225,5 +228,13 @@ class EndOfList extends StatelessWidget {
         ),
       );
     }
+  }
+}
+
+void exitApp() {
+  if (Platform.isAndroid) {
+    SystemNavigator.pop();
+  } else if (Platform.isIOS) {
+    exit(0); // Use exit(0) within a zone for iOS
   }
 }

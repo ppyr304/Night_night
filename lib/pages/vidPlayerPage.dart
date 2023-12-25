@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistData.dart';
+import 'package:youtube_player/classes/forSettings/counters.dart';
 import 'package:youtube_player/classes/others/otherVideoList.dart';
 import 'package:youtube_player/statics/APIService.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -87,6 +88,15 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
     return yt;
   }
 
+  void checkLimits () {
+    var limits = Counters.instance;
+    if (limits.atLimit()) {
+      exitApp();
+    } else {
+      limits.increment();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double ratio = 16 / 9;
@@ -138,6 +148,19 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                         ),
                         controller: snapshot.data!,
                         showVideoProgressIndicator: true,
+                        onReady: () {
+                          Duration d =
+                              widget.item!.duration ?? const Duration();
+                          if (d > Counters.instance.maxDuration &&
+                              Counters.instance.maxDuration >
+                                  const Duration()) {
+                            Future.delayed(Counters.instance.maxDuration, () {
+                              exitApp();
+                            });
+                          } else {
+                            Counters.instance.maxDuration -= d;
+                          }
+                        },
                         onEnded: (ytContext) {
                           if (widget.playlist != null) {
                             if (widget.curr ==
@@ -154,7 +177,7 @@ class _VidPlayerPageState extends State<VidPlayerPage> {
                                       )));
                             }
                           } else {
-                            exit(0);
+                            checkLimits();
                           }
                         },
                       ),

@@ -92,6 +92,8 @@ class _VideoAmountFieldState extends State<VideoAmountField> {
   @override
   void dispose() {
     _controller.dispose();
+    focusNode.dispose();
+    Counters.instance.clearTemp();
     super.dispose();
   }
 }
@@ -283,6 +285,12 @@ class _DurationFieldState extends State<DurationField> {
     _hController.dispose();
     _mController.dispose();
     _sController.dispose();
+
+    fnh.dispose();
+    fnm.dispose();
+    fns.dispose();
+
+    Counters.instance.clearTemp();
     super.dispose();
   }
 }

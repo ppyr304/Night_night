@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:youtube_player/assets/constants.dart';
 import 'package:youtube_player/classes/forPlaylist/playlistCard.dart';
@@ -116,9 +115,7 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> fileLoader() async {
-    String temp = '';
-    temp = await Future.value(Storage.readLimit());
-    print(temp);
+    await Future.value(Storage.readLimit());
   }
 
   @override
@@ -129,7 +126,8 @@ class _HomePageState extends State<HomePage>
 
     vidController.addListener(() {
       if (vidController.position.maxScrollExtent == vidController.offset &&
-          sd.videoLimitReached == false && isSearchingV == false) {
+          sd.videoLimitReached == false &&
+          isSearchingV == false) {
         setState(() {
           isSearchingV == true;
           searchVideos();
@@ -139,7 +137,8 @@ class _HomePageState extends State<HomePage>
     });
     chaController.addListener(() {
       if (chaController.position.maxScrollExtent == chaController.offset &&
-          sd.channelLimitReached == false && isSearchingC == false) {
+          sd.channelLimitReached == false &&
+          isSearchingC == false) {
         setState(() {
           isSearchingC == true;
           searchChannels();
@@ -149,7 +148,8 @@ class _HomePageState extends State<HomePage>
     });
     plaController.addListener(() {
       if (plaController.position.maxScrollExtent == plaController.offset &&
-          sd.playlistLimitReached == false && isSearchingP == false) {
+          sd.playlistLimitReached == false &&
+          isSearchingP == false) {
         setState(() {
           isSearchingP == true;
           searchPlaylists();

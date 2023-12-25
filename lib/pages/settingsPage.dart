@@ -22,7 +22,8 @@ class _SettingsPageState extends State<SettingsPage> {
     int m = Counters.instance.m;
     int s = Counters.instance.s;
     String limits = '$n\n$h $m $s';
-    Storage.writeLimit(limits);
+    await Storage.writeLimit(limits);
+    await Storage.readLimit();
   }
 
   @override

@@ -5,6 +5,8 @@ class Counters {
   //current video num
   int curr = 0;
 
+  //condition to save data
+  bool toSave = false;
   //temporary data and data for saving
   int num = 0;
   Duration dur = const Duration();
@@ -21,5 +23,13 @@ class Counters {
 
   bool atLimit() {
     return (maxVideos == curr);
+  }
+
+  void clearTemp () {
+    num = 0;
+    dur = const Duration();
+    h = 0;
+    m = 0;
+    s = 0;
   }
 }

@@ -30,7 +30,7 @@ class Storage {
       temp = await file.readAsString();
     } catch (error) {
       log('${DateTime.now()}, at readFromFile, $error');
-      log('creating a new file called night^2_limitSaves');
+      log('--creating a new file called night^2_limitSaves');
 
       String text = '1\n'
           '0 30 0';
@@ -38,7 +38,7 @@ class Storage {
       await writeLimit(text);
       file = await _getLocalFile('night^2_limitSaves');
       temp = await file.readAsString();
-      log(file.path);
+      log('--${file.path}');
     }
 
     if (temp.isNotEmpty) {
