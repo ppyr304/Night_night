@@ -32,6 +32,7 @@ class _VideoAmountFieldState extends State<VideoAmountField> {
   @override
   void initState() {
     _controller.text = Counters.instance.maxVideos.toString();
+    input = _controller.text;
     super.initState();
   }
 
@@ -59,20 +60,26 @@ class _VideoAmountFieldState extends State<VideoAmountField> {
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 int enteredValue = int.tryParse(value) ?? 0;
-                if (enteredValue >99) {
+                if (enteredValue > 99) {
                   input = '99';
+                  _controller.text = input;
+                } else if (enteredValue < 0) {
+                  input = '0';
                   _controller.text = input;
                 } else {
                   input = value;
                 }
+
+                int num = int.tryParse(input) ?? 1;
+                Counters.instance.num = num;
               },
               onEditingComplete: () {
                 focusNode.unfocus();
                 if (input == '0') {
-                  Counters.instance.maxVideos = 0;
+                  Counters.instance.num = 0;
                 } else {
-                  int value = int.tryParse(input) ?? 0;
-                  Counters.instance.maxVideos = value;
+                  int value = int.tryParse(input) ?? 1;
+                  Counters.instance.num = value;
                 }
               },
             ),
@@ -110,9 +117,11 @@ class _DurationFieldState extends State<DurationField> {
   int seconds = 0;
 
   void setDuration() {
-    print(hours);
-    print(minutes);
-    print(seconds);
+    Counters.instance.h = hours;
+    Counters.instance.m = minutes;
+    Counters.instance.s = seconds;
+    Duration temp = Duration(hours: hours, minutes: minutes, seconds: seconds);
+    Counters.instance.dur = temp;
   }
 
   @override
@@ -161,6 +170,10 @@ class _DurationFieldState extends State<DurationField> {
                   minutes = 0;
                   seconds = 0;
                 }
+
+                hours = int.tryParse(_hController.text) ?? 0;
+                _hController.text = hours.toString();
+                setDuration();
               },
               onEditingComplete: () {
                 hours = int.tryParse(_hController.text) ?? 0;
@@ -200,9 +213,13 @@ class _DurationFieldState extends State<DurationField> {
                   _hController.text = '23';
                   hours = 23;
                 }
+
+                minutes = int.tryParse(_mController.text) ?? 30;
+                _mController.text = minutes.toString();
+                setDuration();
               },
               onEditingComplete: () {
-                minutes = int.tryParse(_mController.text) ?? 0;
+                minutes = int.tryParse(_mController.text) ?? 30;
                 _mController.text = minutes.toString();
                 fnm.unfocus();
                 setDuration();
@@ -239,6 +256,10 @@ class _DurationFieldState extends State<DurationField> {
                   _hController.text = '23';
                   hours = 23;
                 }
+
+                seconds = int.tryParse(_sController.text) ?? 0;
+                _sController.text = seconds.toString();
+                setDuration();
               },
               onEditingComplete: () {
                 seconds = int.tryParse(_sController.text) ?? 0;

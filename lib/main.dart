@@ -52,6 +52,10 @@ class _HomePageState extends State<HomePage>
   final FocusNode _node = FocusNode();
   int filter = 0;
 
+  bool isSearchingV = false;
+  bool isSearchingC = false;
+  bool isSearchingP = false;
+
   List<String> presets_1 = [
     "Enter Video Name...",
     "Enter Channel Name...",
@@ -113,22 +117,10 @@ class _HomePageState extends State<HomePage>
     });
   }
 
-  Future<String> loadFile() async {
-    String response = '';
-    try {
-      // response = await rootBundle.loadString('lib/saves/counterSaves.txt');
-      File file = File('counterSaves.txt');
-      print(file.absolute);
-      response = await file.readAsString();
-    } catch (error) {
-      log('${DateTime.now()}, at LoadFile, $error');
-    }
-
-    return response;
-  }
-
   Future<void> fileLoader() async {
-    await Future.value(Storage.readFromFile());
+    String temp = '';
+    temp = await Future.value(Storage.readLimit());
+    print(temp);
   }
 
   @override
@@ -139,25 +131,31 @@ class _HomePageState extends State<HomePage>
 
     vidController.addListener(() {
       if (vidController.position.maxScrollExtent == vidController.offset &&
-          sd.videoLimitReached == false) {
+          sd.videoLimitReached == false && isSearchingV == false) {
         setState(() {
+          isSearchingV == true;
           searchVideos();
+          isSearchingV == false;
         });
       }
     });
     chaController.addListener(() {
       if (chaController.position.maxScrollExtent == chaController.offset &&
-          sd.channelLimitReached == false) {
+          sd.channelLimitReached == false && isSearchingC == false) {
         setState(() {
+          isSearchingC == true;
           searchChannels();
+          isSearchingC == false;
         });
       }
     });
     plaController.addListener(() {
       if (plaController.position.maxScrollExtent == plaController.offset &&
-          sd.playlistLimitReached == false) {
+          sd.playlistLimitReached == false && isSearchingP == false) {
         setState(() {
+          isSearchingP == true;
           searchPlaylists();
+          isSearchingP == false;
         });
       }
     });

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:youtube_player/classes/others/storage.dart';
 
 import '../classes/forSettings/counters.dart';
-import '../classes/forSettings/settingsFuncs.dart';
+import '../classes/forSettings/settingsWidgets.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -14,6 +15,15 @@ class _SettingsPageState extends State<SettingsPage> {
   String limitTooltip =
       'Sets the maximum videos/duration before closing the app.\n'
       '** 0 = unlimited videos / duration';
+
+  void saveLimit () async {
+    int n = Counters.instance.num;
+    int h = Counters.instance.h;
+    int m = Counters.instance.m;
+    int s = Counters.instance.s;
+    String limits = '$n\n$h $m $s';
+    Storage.writeLimit(limits);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,13 +58,15 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 15),
             const DurationField(),
             const SizedBox(height: 15),
-            const Divider(),
             OutlinedButton(
               onPressed: () {
-                print(Counters.instance.maxVideos);
+                Counters.instance.maxVideos = Counters.instance.num;
+                Counters.instance.maxDuration = Counters.instance.dur;
+                saveLimit();
               },
-              child: const Text('test'),
+              child: const Text('save limit'),
             ),
+            const Divider(),
           ],
         ),
       ),
