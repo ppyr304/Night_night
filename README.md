@@ -3,7 +3,7 @@
 A personal Flutter project that aims to create an app for hand free video/audio player while sleeping.
 - Uses Youtube API and Youtube_explode_dart for videos
 
-**Technically a lesser Youtube in the current version with the feature of auto closing.
+***Technically a lesser Youtube in the current version with the feature of auto closing.
 
 ## Closes after:
 - A certain number of videos watched or
