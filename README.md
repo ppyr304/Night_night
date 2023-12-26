@@ -16,6 +16,7 @@ A personal Flutter project that aims to create an app for hand free video/audio 
 - adding other sources for video/audio through api or packages (haven't look into it yet)
 
 ## problems
+- haven't got my head around how to code selected themes yet
 - maybe using way too much stateful widgets
 - loading time
 - probably will not be accepted into ios/android app store due to the auto closing feature
